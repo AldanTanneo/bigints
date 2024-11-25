@@ -1,4 +1,4 @@
-name = "bigints"
+name = "tests"
 description = ""
 version = "0.1.0-dev"
 
@@ -9,23 +9,18 @@ licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
 website = ""
 tags = []
 
+executables = ["runner"]
+
 [build-switches]
 "*".ada_version = "Ada2022"
-development.optimization = ["-O3"]
-release.runtime_checks = "none"
 
 [[depends-on]]
-gnatprove = "^14.1.1"
+aunit = "*"
+bigints = "*"
 
-[[actions]]
-type = "test"
-command = ["alr", "build"]
+[[pins]]
+bigints = { path = '..' }
 
-[[actions]]
-type = "test"
-command = ["alr", "gnatprove"]
+[build-profiles]
+bigints = 'development'
 
-[[actions]]
-type = "test"
-command = ["./run.sh"]
-directory = "tests"
