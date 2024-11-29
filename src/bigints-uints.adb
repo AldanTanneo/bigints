@@ -356,9 +356,13 @@ is
    end Cond_Select;
 
    function Shl (Value : Uint; Amount : Natural) return Uint is
+      use Const_Choice;
+
       Res                : Uint := ZERO;
       Shift_Num          : constant Natural := Amount / 64;
       Shift_Rem          : constant Natural := Amount mod 64;
+      Rem_Is_Zero        : constant Choice :=
+        Choice_From_Condition (Shift_Rem = 0);
       Carry              : U64 := 0;
       New_Carry, Shifted : U64;
    begin
@@ -369,6 +373,7 @@ is
       for I in Shift_Num + 1 .. N loop
          Shifted := Shift_Left (Res (I), Shift_Rem);
          New_Carry := Shift_Right (Res (I), (64 - Shift_Rem) mod 64);
+         New_Carry := Cond_Select (New_Carry, 0, Rem_Is_Zero);
          Res (I) := Shifted or Carry;
          Carry := New_Carry;
       end loop;
@@ -377,13 +382,17 @@ is
    end Shl;
 
    function Shl_Limb (Value : Uint; Shift : Natural) return Uint_Carry is
-      Res   : Uint
+      use Const_Choice;
+
+      Shift_Is_Zero : constant Choice := Choice_From_Condition (Shift = 0);
+      Res           : Uint
       with Relaxed_Initialization;
-      Carry : U64 := 0;
+      Carry         : U64 := 0;
    begin
       for I in 1 .. N loop
          Res (I) := Shift_Left (Value (I), Shift) or Carry;
          Carry := Shift_Right (Value (I), (64 - Shift) mod 64);
+         Carry := Cond_Select (Carry, 0, Shift_Is_Zero);
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
       end loop;
       return (Res, Carry);
@@ -404,9 +413,13 @@ is
    end Shl1;
 
    function Shr (Value : Uint; Amount : Natural) return Uint is
+      use Const_Choice;
+
       Res                : Uint := ZERO;
       Shift_Num          : constant Natural := Amount / 64;
       Shift_Rem          : constant Natural := Amount mod 64;
+      Rem_Is_Zero        : constant Choice :=
+        Choice_From_Condition (Shift_Rem = 0);
       Carry              : U64 := 0;
       New_Carry, Shifted : U64;
    begin
@@ -417,6 +430,7 @@ is
       for I in reverse 1 .. N - Shift_Num loop
          Shifted := Shift_Right (Res (I), Shift_Rem);
          New_Carry := Shift_Left (Res (I), (64 - Shift_Rem) mod 64);
+         New_Carry := Cond_Select (New_Carry, 0, Rem_Is_Zero);
          Res (I) := Shifted or Carry;
          Carry := New_Carry;
       end loop;
@@ -425,13 +439,17 @@ is
    end Shr;
 
    function Shr_Limb (Value : Uint; Shift : Natural) return Uint_Carry is
-      Res   : Uint
+      use Const_Choice;
+
+      Shift_Is_Zero : constant Choice := Choice_From_Condition (Shift = 0);
+      Res           : Uint
       with Relaxed_Initialization;
-      Carry : U64 := 0;
+      Carry         : U64 := 0;
    begin
       for I in reverse 1 .. N loop
          Res (I) := Shift_Right (Value (I), Shift) or Carry;
          Carry := Shift_Left (Value (I), (64 - Shift) mod 64);
+         Carry := Cond_Select (Carry, 0, Shift_Is_Zero);
          pragma Loop_Invariant (Res (I .. N)'Initialized);
       end loop;
       return (Res, Carry);
@@ -450,5 +468,51 @@ is
       end loop;
       return (Res, Carry);
    end Shr1;
+
+   function Leading_Zeros (Value : Uint) return Natural is
+      use Const_Choice;
+
+      Limb, Z                  : U64;
+      Count                    : U64 := 0;
+      Limb_Is_Zero             : Choice;
+      Non_Zero_Not_Encountered : Choice := Choice_From_Condition (True);
+
+      Non_Zero_Index : Natural := N
+      with Ghost;
+   begin
+
+      for I in reverse 1 .. N loop
+         pragma
+           Loop_Invariant
+             (if To_Bool (Non_Zero_Not_Encountered)
+                then
+                  (for all J in I + 1 .. N => Value (J) = 0)
+                  and then Count = 64 * U64 (N - I)
+                else
+                  Non_Zero_Index in I + 1 .. N
+                  and then Value (Non_Zero_Index) /= 0
+                  and then (for all J in Non_Zero_Index + 1 .. N
+                            => Value (J) = 0)
+                  and then Count / 64 = U64 (N - Non_Zero_Index));
+
+         Limb := Value (I);
+         Limb_Is_Zero := Choice_From_Condition (Limb = 0);
+         Limb := Cond_Select (Limb, 1, Limb_Is_Zero);
+         Z := Cond_Select (U64 (Leading_Zeros (Limb)), 64, Limb_Is_Zero);
+
+         Count := Count + Cond_Select (0, Z, Non_Zero_Not_Encountered);
+
+         Non_Zero_Index :=
+           (if To_Bool (Non_Zero_Not_Encountered)
+              and then not To_Bool (Limb_Is_Zero)
+            then I
+            else Non_Zero_Index);
+
+         Non_Zero_Not_Encountered := Non_Zero_Not_Encountered and Limb_Is_Zero;
+
+      end loop;
+
+      return Natural (Count);
+   end Leading_Zeros;
 
 end Bigints.Uints;

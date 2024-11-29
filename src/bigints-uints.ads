@@ -131,4 +131,13 @@ package Bigints.Uints with SPARK_Mode => On is
    function Shr1 (Value : Uint) return Uint
    is (Uint_Carry'(Shr1 (Value)).Res);
 
+   function Leading_Zeros (Value : Uint) return Natural
+   with
+     Post =>
+       Leading_Zeros'Result <= BITS
+       and then (for all I in N - Leading_Zeros'Result / 64 + 1 .. N
+                 => Value (I) = 0)
+       and then (Leading_Zeros'Result = BITS
+                 or else Value (N - Leading_Zeros'Result / 64) /= 0);
+
 end Bigints.Uints;
