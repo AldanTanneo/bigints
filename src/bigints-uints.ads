@@ -24,6 +24,18 @@ package Bigints.Uints with SPARK_Mode => On is
    ONE  : constant Uint := [1 => 1, others => 0];
    MAX  : constant Uint := [others => U64'Last];
 
+   function Is_Hex (C : Character) return Boolean
+   is ((C in '0' .. '9' or else C in 'a' .. 'f' or else C in 'A' .. 'F'))
+   with Ghost;
+
+   function From_Hex (Value : String) return Uint
+   with
+     Pre =>
+       (Value'Length > 0
+        and then Value'Length <= 16 * N
+        and then (for all I in Value'Range
+                  => Value (I) = '_' or else Is_Hex (Value (I))));
+
    function Concat (Lo, Hi : Uint) return Wide_Uint
    with
      Post =>

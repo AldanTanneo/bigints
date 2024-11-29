@@ -4,6 +4,34 @@ package body Bigints.Uints
   with SPARK_Mode => On
 is
 
+   function From_Hex (Value : String) return Uint is
+      Res : Uint := ZERO;
+      I   : Natural := 0;
+      V   : U64;
+   begin
+      for C in reverse Value'Range loop
+         pragma Loop_Invariant (I <= Value'Last - C);
+
+         case Value (C) is
+            when '0' .. '9' =>
+               V := Character'Pos (Value (C)) - Character'Pos ('0');
+
+            when 'a' .. 'f' =>
+               V := Character'Pos (Value (C)) - Character'Pos ('a') + 10;
+
+            when 'A' .. 'F' =>
+               V := Character'Pos (Value (C)) - Character'Pos ('A') + 10;
+
+            when others =>
+               V := 0;
+         end case;
+         Res (I / 16 + 1) :=
+           Res (I / 16 + 1) or Shift_Left (V, 4 * (I mod 16));
+         I := I + Boolean'Pos (Value (C) /= '_');
+      end loop;
+      return Res;
+   end From_Hex;
+
    function Concat (Lo, Hi : Uint) return Wide_Uint is
       Res : Wide_Uint
       with Relaxed_Initialization;
