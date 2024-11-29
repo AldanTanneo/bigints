@@ -21,6 +21,9 @@ is
         Pre => Value > 0, --  __builtin_clz is undefined for 0
         Post =>
           Leading_Zeros_32'Result < 32
+          and then (Value * 2 ** Leading_Zeros_32'Result)
+                   / 2 ** Leading_Zeros_32'Result
+                   = Value
           and then Value * 2 ** (Leading_Zeros_32'Result) >= 2 ** 31,
         Global => null,
         Inline;
@@ -31,6 +34,9 @@ is
         Pre => Value > 0, --  __builtin_clzl is undefined for 0
         Post =>
           Leading_Zeros_64'Result < 64
+          and then (Value * 2 ** Leading_Zeros_64'Result)
+                   / 2 ** Leading_Zeros_64'Result
+                   = Value
           and then Value * 2 ** (Leading_Zeros_64'Result) >= 2 ** 63,
         Global => null,
         Inline;
@@ -43,6 +49,8 @@ is
      Pre => Value > 0,
      Post =>
        Leading_Zeros'Result < 32
+       and then (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result
+                = Value
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 31,
      Inline_Always;
 
@@ -71,6 +79,8 @@ is
      Pre => Value > 0,
      Post =>
        Leading_Zeros'Result < 64
+       and then (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result
+                = Value
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 63,
      Inline_Always;
 

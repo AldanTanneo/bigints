@@ -9,11 +9,18 @@ is
    with Ghost;
 
    function "not" (C : Choice) return Choice
-   with Inline_Always;
+   with Post => To_Bool ("not"'Result) = (not To_Bool (C)), Inline_Always;
+
    function "or" (A, B : Choice) return Choice
-   with Inline_Always;
+   with
+     Post => To_Bool ("or"'Result) = (To_Bool (A) or else To_Bool (B)),
+     Inline_Always;
+
    function "and" (A, B : Choice) return Choice
-   with Inline_Always;
+   with
+     Post => To_Bool ("and"'Result) = (To_Bool (A) and then To_Bool (B)),
+     Inline_Always;
+
    function Lsb (C : Choice) return U32
    with
      Inline,

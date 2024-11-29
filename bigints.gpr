@@ -27,7 +27,7 @@ project Bigints is
           "-j6"
          ,"--timeout=60"
          ,"--mode=gold"
-         ,"--no-global-generation"
+         ,"--level=4"
          ,"--no-inlining"
          ,"--no-loop-unrolling"
       );

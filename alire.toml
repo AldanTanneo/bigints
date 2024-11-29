@@ -23,7 +23,7 @@ command = ["alr", "build"]
 
 [[actions]]
 type = "test"
-command = ["alr", "gnatprove"]
+command = ["alr", "gnatprove", "--warnings=error"]
 
 [[actions]]
 type = "test"

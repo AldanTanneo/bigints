@@ -34,8 +34,13 @@ is
    function Sub_Borrow (X, Y, Borrow : U64) return Tuple
    with
      Inline_Always,
+     Pre => Borrow = 0 or else Borrow = U64'Last,
      Post =>
-       Sub_Borrow'Result.Snd = 0 or else Sub_Borrow'Result.Snd = U64'Last;
+       (Sub_Borrow'Result.Fst = X - (Y + Borrow / 2 ** 63)
+        and then (Sub_Borrow'Result.Snd = U64'Last)
+                 = (U128 (X) < U128 (Y) + U128 (Borrow) / 2 ** 63)
+        and then (Sub_Borrow'Result.Snd = 0
+                  or else Sub_Borrow'Result.Snd = U64'Last));
    --  Computes `X - (Y + Borrow)`, returning the result along with the new
    --  borrow.
 
@@ -47,7 +52,10 @@ is
    type Recip is private;
 
    function Create_Recip (Divisor : U64) return Recip
-   with Inline, Pre => Divisor > 0;
+   with
+     Inline,
+     Pre => Divisor > 0,
+     Post => Get_Shift (Create_Recip'Result) = Leading_Zeros (Divisor);
 
    function Get_Shift (R : Recip) return Natural
    with Inline_Always, Post => Get_Shift'Result < 64;
@@ -68,9 +76,7 @@ is
    --  reciprocal `Re`.
 
    function Div3By2 (U2, U1, U0 : U64; V1_Recip : Recip; V0 : U64) return U64
-   with
-     Inline,
-     Pre => Get_Shift (V1_Recip) = 0 and then U2 <= Get_Divisor (V1_Recip);
+   with Inline, Pre => Get_Shift (V1_Recip) = 0;
    --  Given two long integers `U = (..., U0, U1, U2)` and `V = (..., V0, V1)`
    --  (where `U2` and `V1` are the most significant limbs), where
    --  `floor(U / V) <= U64'Last`, calculates `Q` such that

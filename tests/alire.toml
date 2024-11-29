@@ -22,5 +22,5 @@ bigints = "*"
 bigints = { path = '..' }
 
 [build-profiles]
-bigints = 'development'
+bigints = 'validation'
 

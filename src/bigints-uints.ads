@@ -5,6 +5,9 @@ with Bigints.Const_Choice;
 generic
    N : Positive;
 package Bigints.Uints with SPARK_Mode => On is
+   BITS : constant Positive := 64 * N;
+   pragma Assert (64 * N < Positive'Last);
+
    type Uint is array (1 .. N) of U64;
    type Wide_Uint is array (1 .. 2 * N) of U64;
 
@@ -32,9 +35,14 @@ package Bigints.Uints with SPARK_Mode => On is
    with Post => (for all I in 1 .. N => A (N + I) = Truncate_Upper'Result (I));
 
    function Neg (A : Uint) return Uint;
+
    function Add_Carry (A, B : Uint; Carry : U64) return Uint_Carry;
-   function Sub_Borrow (A, B : Uint; Borrow : U64) return Uint_Carry;
+
+   function Sub_Borrow (A, B : Uint; Borrow : U64) return Uint_Carry
+   with Pre => Borrow = 0 or else Borrow = U64'Last;
+
    function Mul_Wide (A, B : Uint) return Wide_Uint;
+
    function Div_Rem_Limb_With_Reciprocal
      (U : Uint; Re : Primitives.Recip) return Quotient_Rem;
    function Rem_Limb_With_Reciprocal
@@ -69,11 +77,11 @@ package Bigints.Uints with SPARK_Mode => On is
    function "*" (A, B : Uint) return Uint;
 
    function Inv_Mod2k_Vartime (Value : Uint; K : Positive) return Uint
-   with Pre => Value (1) mod 2 = 1 and then 64 * N >= K;
+   with Pre => Value (1) mod 2 = 1 and then K <= BITS;
    --  Variable time relative to K
 
    function Bit_Vartime (Value : Uint; Amount : Natural) return Boolean
-   with Pre => 64 * N > Amount;
+   with Pre => Amount < BITS;
    --  Variable time relative to Amount
 
    function Equal (A, B : Uint) return Boolean
@@ -100,8 +108,7 @@ package Bigints.Uints with SPARK_Mode => On is
    --  Constant time select
 
    function Shl (Value : Uint; Amount : Natural) return Uint
-   with Pre => 64 * N >= Amount;
-   --  Variable time relative to N
+   with Pre => Amount <= BITS;
 
    function Shl_Limb (Value : Uint; Shift : Natural) return Uint_Carry
    with Pre => Shift < 64;
@@ -113,8 +120,7 @@ package Bigints.Uints with SPARK_Mode => On is
    is (Uint_Carry'(Shl1 (Value)).Res);
 
    function Shr (Value : Uint; Amount : Natural) return Uint
-   with Pre => 64 * N >= Amount;
-   --  Variable time relative to N
+   with Pre => Amount <= BITS;
 
    function Shr_Limb (Value : Uint; Shift : Natural) return Uint_Carry
    with Pre => Shift < 64;
