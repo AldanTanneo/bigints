@@ -49,6 +49,13 @@ is
    --  Computes `a + (b * c) + carry`, returning the result along with the new
    --  carry.
 
+   function Saturating_Sub (A, B : U64) return U64
+   with
+     Inline_Always,
+     Post =>
+       (if A >= B then Saturating_Sub'Result = A - B
+        else Saturating_Sub'Result = 0);
+
    type Recip is private;
 
    function Create_Recip (Divisor : U64) return Recip
