@@ -183,9 +183,10 @@ is
       C   : U64 renames Tmp.Snd;
    begin
       for I in 1 .. N loop
-         Tmp := Primitives.Sub_Borrow (A (I), B (I), C);
+         Tmp := Sub_Borrow (A (I), B (I), C);
          Res (I) := W;
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
+         pragma Loop_Invariant (C = 0 or else C = U64'Last);
       end loop;
       return (Res, C);
    end Sub_Borrow;
@@ -282,27 +283,108 @@ is
       return Shift_Right (R, Get_Shift (Re));
    end Rem_Limb_With_Reciprocal_Wide;
 
-   function Div_Rem_Limb (Value : Uint; Rhs : U64) return Quotient_Rem
-   with Pre => Rhs /= 0
-   is
+   function Div_Rem_Limb (Value : Uint; Rhs : U64) return Quotient_Rem is
    begin
       return Div_Rem_Limb_With_Reciprocal (Value, Create_Recip (Rhs));
    end Div_Rem_Limb;
 
-   function Rem_Limb (Value : Uint; Rhs : U64) return U64 with Pre => Rhs /= 0
-   is
+   function Rem_Limb (Value : Uint; Rhs : U64) return U64 is
    begin
       return Rem_Limb_With_Reciprocal (Value, Create_Recip (Rhs));
    end Rem_Limb;
 
-   procedure Impl_Div_Rem (Lhs, Rhs : Uint; Quotient, Remainder : out Uint)
-   with Pre => (for some I in 1 .. N => Rhs (I) /= 0)
-   is
+   procedure Impl_Div_Rem (Lhs, Rhs : Uint; Quotient, Remainder : out Uint) is
+      use Const_Choice;
 
+      Dshift : constant Natural := Leading_Zeros (Rhs);
+      Dbits  : constant Natural := BITS - Dshift;
+      pragma Assert (Dbits > 0);
+      Dwords : constant Natural := (Dbits + 63) / 64; --  div ceiling
+      Lshift : constant Natural := (64 - (Dbits mod 64)) mod 64;
+
+      Y : Uint := Shl (Rhs, Dshift);
+      pragma Assume (Y (N) >= 2 ** 63); --  Shifting left by leading zeros.
+
+      Lhs_Shifted : constant Uint_Carry := Shl_Limb (Lhs, Lshift);
+      X           : Uint := Lhs_Shifted.Res;
+      X_Hi        : U64 := Lhs_Shifted.Carry;
+      X_Lo        : U64 := X (N);
+      Re          : constant Recip := Create_Recip (Y (N));
    begin
-      Quotient := Lhs;
-      Remainder := Rhs;
+
+      for Xi in reverse 2 .. N loop
+         declare
+            Done          : constant Choice :=
+              Choice_From_Condition (Xi < Dwords);
+            Ct_Borrow     : Choice;
+            Q             : constant U64 :=
+              Div3By2 (X_Hi, X_Lo, X (Xi - 1), Re, Y (N - 1));
+            Quo           : U64 := Cond_Select (Q, 0, Done);
+            Carry, Borrow : U64 := 0;
+            Tmp           : Tuple;
+         begin
+
+            for I in 1 .. Xi loop
+               Tmp := Mac (0, Y (N - Xi + I), Quo, Carry);
+               Carry := Tmp.Snd;
+               Tmp := Sub_Borrow (X (I), Tmp.Fst, Borrow);
+               X (I) := Tmp.Fst;
+               Borrow := Tmp.Snd;
+               pragma Loop_Invariant (Borrow = 0 or else Borrow = U64'Last);
+            end loop;
+            Tmp := Sub_Borrow (X_Hi, Carry, Borrow);
+            Borrow := Tmp.Snd;
+
+            Ct_Borrow := Choice_From_Condition (Borrow /= 0);
+            Carry := 0;
+            for I in 1 .. Xi loop
+               Tmp :=
+                 Add_Carry
+                   (X (I), Cond_Select (0, Y (N - Xi + I), Ct_Borrow), Carry);
+               X (I) := Tmp.Fst;
+               Carry := Tmp.Snd;
+            end loop;
+            Quo := Cond_Select (Quo, Saturating_Sub (Quo, 1), Ct_Borrow);
+
+            X_Hi := Cond_Select (X (Xi), X_Hi, Done);
+            X (Xi) := Cond_Select (Quo, X (Xi), Done);
+            X_Lo := Cond_Select (X (Xi - 1), X_Lo, Done);
+         end;
+      end loop;
+
+      declare
+         Limb_Div : constant Choice := Choice_From_Condition (Dwords = 1);
+         --  X_Hi_Adjusted : constant U64 := Cond_Select (0, X_Hi, Limb_Div);
+         QuoRem2  : constant Tuple := Div2By1 (X_Hi, X_Lo, Re);
+      begin
+         X (1) := Cond_Select (X (1), QuoRem2.Fst, Limb_Div);
+         Y (1) := Cond_Select (X (1), QuoRem2.Snd, Limb_Div);
+         for I in 2 .. N loop
+            Y (I) :=
+              Cond_Select (0, X (I), Choice_From_Condition (I <= Dwords));
+            Y (I) :=
+              Cond_Select (Y (I), X_Hi, Choice_From_Condition (I = Dwords));
+         end loop;
+      end;
+      Quotient := Shr (X, (Dwords - 1) * 64);
+      Remainder := Shr (Y, Lshift);
    end Impl_Div_Rem;
+
+   function "/" (A, B : Uint) return Uint is
+      Quotient, Remainder : Uint;
+   begin
+      Impl_Div_Rem (A, B, Quotient, Remainder);
+      pragma Unreferenced (Remainder);
+      return Quotient;
+   end "/";
+
+   function "mod" (A, B : Uint) return Uint is
+      Quotient, Remainder : Uint;
+   begin
+      Impl_Div_Rem (A, B, Quotient, Remainder);
+      pragma Unreferenced (Quotient);
+      return Remainder;
+   end "mod";
 
    function Inv_Mod2k_Vartime (Value : Uint; K : Positive) return Uint is
       X : Uint := ZERO;

@@ -59,6 +59,15 @@ package Bigints.Uints with SPARK_Mode => On is
      (U : Uint; Re : Primitives.Recip) return Quotient_Rem;
    function Rem_Limb_With_Reciprocal
      (U : Uint; Re : Primitives.Recip) return U64;
+   function Rem_Limb_With_Reciprocal_Wide
+     (Lo, Hi : Uint; Re : Primitives.Recip) return U64;
+   function Div_Rem_Limb (Value : Uint; Rhs : U64) return Quotient_Rem
+   with Pre => Rhs /= 0;
+   function Rem_Limb (Value : Uint; Rhs : U64) return U64
+   with Pre => Rhs /= 0;
+
+   procedure Impl_Div_Rem (Lhs, Rhs : Uint; Quotient, Remainder : out Uint)
+   with Pre => (for some I in 1 .. N => Rhs (I) /= 0);
 
    function "not" (A : Uint) return Uint
    with Inline, Post => (for all I in 1 .. N => "not"'Result (I) = not A (I));
@@ -87,6 +96,12 @@ package Bigints.Uints with SPARK_Mode => On is
    function "-" (A, B : Uint) return Uint;
 
    function "*" (A, B : Uint) return Uint;
+
+   function "/" (A, B : Uint) return Uint
+   with Pre => (for some I in 1 .. N => B (I) /= 0);
+
+   function "mod" (A, B : Uint) return Uint
+   with Pre => (for some I in 1 .. N => B (I) /= 0);
 
    function Inv_Mod2k_Vartime (Value : Uint; K : Positive) return Uint
    with Pre => Value (1) mod 2 = 1 and then K <= BITS;
