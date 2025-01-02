@@ -465,14 +465,10 @@ is
       return Res;
    end Cond_Select;
 
-   function Shl (Value : Uint; Amount : Natural) return Uint is
-      use Const_Choice;
-
+   function Shl_Vartime (Value : Uint; Amount : Natural) return Uint is
       Res                : Uint := ZERO;
       Shift_Num          : constant Natural := Amount / 64;
       Shift_Rem          : constant Natural := Amount mod 64;
-      Rem_Is_Zero        : constant Choice :=
-        Choice_From_Condition (Shift_Rem = 0);
       Carry              : U64 := 0;
       New_Carry, Shifted : U64;
    begin
@@ -480,14 +476,31 @@ is
          Res (I) := Value (I - Shift_Num);
       end loop;
 
+      if Shift_Rem = 0 then
+         return Res;
+      end if;
+
       for I in Shift_Num + 1 .. N loop
          Shifted := Shift_Left (Res (I), Shift_Rem);
-         New_Carry := Shift_Right (Res (I), (64 - Shift_Rem) mod 64);
-         New_Carry := Cond_Select (New_Carry, 0, Rem_Is_Zero);
+         New_Carry := Shift_Right (Res (I), 64 - Shift_Rem);
          Res (I) := Shifted or Carry;
          Carry := New_Carry;
       end loop;
 
+      return Res;
+   end Shl_Vartime;
+
+   function Shl (Value : Uint; Amount : Natural) return Uint is
+      use Const_Choice;
+
+      Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
+      Res : Uint := Value;
+      Cond : Choice;
+   begin
+      for I in 1 .. Shift_Bits loop
+         Cond := Choice_From_Condition ((Amount / 2 ** (I - 1)) mod 2 /= 0);
+         Res := Cond_Select (Res, Shl_Vartime (Res, 2 ** (I - 1)), Cond);
+      end loop;
       return Res;
    end Shl;
 
@@ -522,14 +535,11 @@ is
       return (Res, Carry);
    end Shl1;
 
-   function Shr (Value : Uint; Amount : Natural) return Uint is
-      use Const_Choice;
+   function Shr_Vartime (Value : Uint; Amount : Natural) return Uint is
 
       Res                : Uint := ZERO;
       Shift_Num          : constant Natural := Amount / 64;
       Shift_Rem          : constant Natural := Amount mod 64;
-      Rem_Is_Zero        : constant Choice :=
-        Choice_From_Condition (Shift_Rem = 0);
       Carry              : U64 := 0;
       New_Carry, Shifted : U64;
    begin
@@ -537,14 +547,31 @@ is
          Res (I) := Value (I + Shift_Num);
       end loop;
 
+      if Shift_Rem = 0 then
+         return Res;
+      end if;
+
       for I in reverse 1 .. N - Shift_Num loop
          Shifted := Shift_Right (Res (I), Shift_Rem);
-         New_Carry := Shift_Left (Res (I), (64 - Shift_Rem) mod 64);
-         New_Carry := Cond_Select (New_Carry, 0, Rem_Is_Zero);
+         New_Carry := Shift_Left (Res (I), 64 - Shift_Rem);
          Res (I) := Shifted or Carry;
          Carry := New_Carry;
       end loop;
 
+      return Res;
+   end Shr_Vartime;
+
+   function Shr (Value : Uint; Amount : Natural) return Uint is
+      use Const_Choice;
+
+      Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
+      Res : Uint := Value;
+      Cond : Choice;
+   begin
+      for I in 1 .. Shift_Bits loop
+         Cond := Choice_From_Condition ((Amount / 2 ** (I - 1)) mod 2 /= 0);
+         Res := Cond_Select (Res, Shr_Vartime (Res, 2 ** (I - 1)), Cond);
+      end loop;
       return Res;
    end Shr;
 
