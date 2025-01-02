@@ -496,10 +496,15 @@ is
       Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
       Res : Uint := Value;
       Cond : Choice;
+      Amnt : Natural := Amount;
+      Pow : Natural := 1;
    begin
       for I in 1 .. Shift_Bits loop
-         Cond := Choice_From_Condition ((Amount / 2 ** (I - 1)) mod 2 /= 0);
-         Res := Cond_Select (Res, Shl_Vartime (Res, 2 ** (I - 1)), Cond);
+         Cond := Choice_From_Condition (Amnt mod 2 /= 0);
+         Res := Cond_Select (Res, Shl_Vartime (Res, Pow), Cond);
+         Amnt := Amnt / 2;
+         Pow := Pow * 2;
+         pragma Loop_Invariant (Pow = 2 ** I);
       end loop;
       return Res;
    end Shl;
@@ -567,10 +572,15 @@ is
       Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
       Res : Uint := Value;
       Cond : Choice;
+      Amnt : Natural := Amount;
+      Pow : Natural := 1;
    begin
       for I in 1 .. Shift_Bits loop
-         Cond := Choice_From_Condition ((Amount / 2 ** (I - 1)) mod 2 /= 0);
-         Res := Cond_Select (Res, Shr_Vartime (Res, 2 ** (I - 1)), Cond);
+         Cond := Choice_From_Condition (Amnt mod 2 /= 0);
+         Res := Cond_Select (Res, Shr_Vartime (Res, Pow), Cond);
+         Amnt := Amnt / 2;
+         Pow := Pow * 2;
+         pragma Loop_Invariant (Pow = 2 ** I);
       end loop;
       return Res;
    end Shr;
