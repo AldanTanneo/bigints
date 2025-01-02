@@ -78,7 +78,7 @@ package body Tests is
       Test_Name   : String := GNAT.Source_Info.Enclosing_Entity;
       Line        : Natural := GNAT.Source_Info.Line)
    is
-      Cond : constant Boolean := U256s.Equal (Left, Right);
+      Cond : constant Boolean := U256s."=" (Left, Right);
    begin
       Assert
         (Cond,

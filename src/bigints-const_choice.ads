@@ -41,7 +41,7 @@ is
        or else (not To_Bool (C) and then Lsb'Result = 0);
 
    function Choice_From_Condition (Cond : Boolean) return Choice
-   with Inline, Post => To_Bool (Choice_From_Condition'Result) = Cond;
+   with Post => To_Bool (Choice_From_Condition'Result) = Cond;
 
    function Cond_Select (A, B : U32; C : Choice) return U32
    with

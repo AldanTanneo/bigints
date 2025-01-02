@@ -411,7 +411,7 @@ is
       return Boolean'Val (Shift_Right (Value (Limb + 1), Bit) and 1);
    end Bit_Vartime;
 
-   function Equal (A, B : Uint) return Boolean is
+   overriding function "=" (A, B : Uint) return Boolean is
       Res : U64 := 0;
    begin
       for I in 1 .. N loop
@@ -420,7 +420,7 @@ is
            Loop_Invariant ((Res = 0) = (for all J in 1 .. I => A (J) = B (J)));
       end loop;
       return Res = 0;
-   end Equal;
+   end "=";
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice) is
       use Const_Choice;

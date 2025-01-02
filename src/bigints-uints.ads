@@ -111,8 +111,8 @@ package Bigints.Uints with SPARK_Mode => On is
    with Pre => Amount < BITS;
    --  Variable time relative to Amount
 
-   function Equal (A, B : Uint) return Boolean
-   with Post => Equal'Result = (for all I in 1 .. N => A (I) = B (I));
+   overriding function "=" (A, B : Uint) return Boolean
+   with Post => "="'Result = (for all I in 1 .. N => A (I) = B (I));
    --  Constant time equality check
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice)

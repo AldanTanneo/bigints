@@ -1,3 +1,5 @@
+with System.Machine_Code;
+
 package body Bigints.Const_Choice
   with SPARK_Mode => On
 is
@@ -34,11 +36,21 @@ is
    end Lsb;
 
    function Choice_From_Condition (Cond : Boolean) return Choice is
+      procedure Opt_Barrier with
+         Global => null, Always_Terminates, Inline_Always;
+      procedure Opt_Barrier with
+         SPARK_Mode => Off
+      is
+      begin
+         System.Machine_Code.Asm ("", Volatile => True);
+      end Opt_Barrier;
+
       V : constant U64 := Boolean'Pos (Cond);
    begin
       pragma
         Assert
           ((V = 0 and then -V = 0) or else (V = 1 and then -V = U64'Last));
+      Opt_Barrier;
       return Choice (-V);
    end Choice_From_Condition;
 
