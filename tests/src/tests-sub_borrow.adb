@@ -1,9 +1,9 @@
 procedure Tests.Sub_Borrow is
    use U256s;
 
-   A : constant U256 := [others => 0];
+   A : constant U256 := ZERO;
    B : constant U256 := [1, 0, 0, 0];
-   C : constant U256 := [others => U64'Last];
+   C : constant U256 := U256s.MAX;
    D : constant U256 := [U64'Last, U64'Last, 0, 0];
 
    Tuple  : Uint_Carry;

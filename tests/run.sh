@@ -6,7 +6,10 @@ function join() {
     echo "$*"
 }
 
+printf "\e[?25l"
+ORIG="$(pwd)"
 cd src
 export TEST_FILES=$(join ':' *.adb)
-cd ..
-alr run
+cd "$ORIG"
+alr run < /dev/null
+printf "\e[?25h"

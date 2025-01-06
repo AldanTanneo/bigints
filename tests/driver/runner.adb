@@ -56,6 +56,8 @@ procedure Runner is
       Code        : Integer;
       Success     : Boolean;
    begin
+      Put ("   ... " & Test_Name & [Ada.Characters.Latin_1.CR]);
+      Flush;
       Spawn ("./bin/" & Test_Name, [], Output_File, Success, Code);
       Run_Id := Run_Id + 1;
       if not Success then
