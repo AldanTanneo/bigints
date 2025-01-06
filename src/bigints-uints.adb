@@ -165,7 +165,7 @@ is
       for I in 1 .. N loop
          Tmp := Primitives.Add_Carry (A (I), B (I), C);
          Res (I) := W;
-         pragma Loop_Invariant (Res (1 .. I)'Initialized);
+         pragma Loop_Invariant (Res (1 .. I)'Initialized and then C in 0 .. 2);
       end loop;
       return (Res, C);
    end Add_Carry;
@@ -185,8 +185,9 @@ is
       for I in 1 .. N loop
          Tmp := Sub_Borrow (A (I), B (I), C);
          Res (I) := W;
-         pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma Loop_Invariant (C = 0 or else C = U64'Last);
+         pragma
+           Loop_Invariant
+             (Res (1 .. I)'Initialized and then (C = 0 or else C = U64'Last));
       end loop;
       return (Res, C);
    end Sub_Borrow;
@@ -411,7 +412,8 @@ is
       return Boolean'Val (Shift_Right (Value (Limb + 1), Bit) and 1);
    end Bit_Vartime;
 
-   overriding function "=" (A, B : Uint) return Boolean is
+   overriding
+   function "=" (A, B : Uint) return Boolean is
       Res : U64 := 0;
    begin
       for I in 1 .. N loop
@@ -494,10 +496,10 @@ is
       use Const_Choice;
 
       Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
-      Res : Uint := Value;
-      Cond : Choice;
-      Amnt : Natural := Amount;
-      Pow : Natural := 1;
+      Res        : Uint := Value;
+      Cond       : Choice;
+      Amnt       : Natural := Amount;
+      Pow        : Natural := 1;
    begin
       for I in 1 .. Shift_Bits loop
          Cond := Choice_From_Condition (Amnt mod 2 /= 0);
@@ -570,10 +572,10 @@ is
       use Const_Choice;
 
       Shift_Bits : constant Positive := 64 - Leading_Zeros (U64 (BITS - 1));
-      Res : Uint := Value;
-      Cond : Choice;
-      Amnt : Natural := Amount;
-      Pow : Natural := 1;
+      Res        : Uint := Value;
+      Cond       : Choice;
+      Amnt       : Natural := Amount;
+      Pow        : Natural := 1;
    begin
       for I in 1 .. Shift_Bits loop
          Cond := Choice_From_Condition (Amnt mod 2 /= 0);
