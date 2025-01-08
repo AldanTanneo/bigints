@@ -6,6 +6,7 @@ with GNAT.Source_Info;
 with Bigints.Primitives;                    use Bigints.Primitives;
 with Bigints.Machine_Ints;                  use Bigints.Machine_Ints;
 with Bigints.U256s;
+with Bigints.U256_Modulo;
 use Bigints;
 with Ada.Numerics.Big_Numbers.Big_Integers;
 use Ada.Numerics.Big_Numbers.Big_Integers;
