@@ -1,6 +1,6 @@
 with AUnit.Assertions;
-with Ada.Characters.Latin_1;       use Ada.Characters.Latin_1;
-with Ada.Text_IO;                  use Ada.Text_IO;
+with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
+with Ada.Text_IO;            use Ada.Text_IO;
 with Ada.Numerics.Discrete_Random;
 
 package body Tests is
@@ -30,6 +30,20 @@ package body Tests is
       return Res;
    end To_Big_Number;
 
+   function To_Big_Number (A : U256s.Wide_Uint) return Big_Natural is
+      Res : Big_Natural := 0;
+   begin
+      for I in reverse A'Range loop
+         Res := Res * (2 ** 64) + Conversions.To_Big_Integer (A (I));
+      end loop;
+      return Res;
+   end To_Big_Number;
+
+   function To_Big_Number (A : U64) return Big_Natural is
+   begin
+      return Conversions.To_Big_Integer (A);
+   end To_Big_Number;
+
    function To_Uint (A : Big_Natural) return U256 is
       Val : Big_Natural := A;
       Res : U256;
@@ -43,6 +57,25 @@ package body Tests is
       end if;
       return Res;
    end To_Uint;
+
+   function To_Wide_Uint (A : Big_Natural) return U256s.Wide_Uint is
+      Val : Big_Natural := A;
+      Res : U256s.Wide_Uint;
+   begin
+      for I in Res'Range loop
+         Res (I) := Conversions.From_Big_Integer (Val rem (2 ** 64));
+         Val := Val / (2 ** 64);
+      end loop;
+      if Val /= 0 then
+         raise Program_Error with "Value does not fit in U256";
+      end if;
+      return Res;
+   end To_Wide_Uint;
+
+   function To_U64 (A : Big_Natural) return U64 is
+   begin
+      return Conversions.From_Big_Integer (A);
+   end To_U64;
 
    procedure Assert
      (Condition : Boolean;

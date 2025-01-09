@@ -72,6 +72,9 @@ package Bigints.Uints with SPARK_Mode => On is
    function Mul_Wide (A, B : Uint) return Wide_Uint;
    --  Compute A * B, widening the result
 
+   function Mul_Limb (A : Uint; B : U64) return Uint_Carry;
+   --  Compute A * B, returning the result and the carry
+
    function Div_Rem_Limb_With_Reciprocal
      (U : Uint; Re : Primitives.Recip) return Quotient_Rem;
    function Rem_Limb_With_Reciprocal
@@ -83,8 +86,10 @@ package Bigints.Uints with SPARK_Mode => On is
    function Rem_Limb (Value : Uint; Rhs : U64) return U64
    with Pre => Rhs /= 0;
 
-   procedure Impl_Div_Rem (Lhs, Rhs : Uint; Quotient, Remainder : out Uint)
-   --  Implement constant time division
+   procedure Impl_Div_Rem
+     (Lhs, Rhs            : Uint;
+      Quotient, Remainder : out Uint)
+      --  Implement constant time division
    with Pre => (for some I in 1 .. N => Rhs (I) /= 0);
 
    function "not" (A : Uint) return Uint
@@ -145,8 +150,12 @@ package Bigints.Uints with SPARK_Mode => On is
 
    overriding
    function "=" (A, B : Uint) return Boolean
-   with Post => "="'Result = (for all I in 1 .. N => A (I) = B (I));
+   with Inline, Post => "="'Result = (for all I in 1 .. N => A (I) = B (I));
    --  Constant time equality check
+
+   overriding
+   function "<" (A, B : Uint) return Boolean
+   with Inline;
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice)
    with
@@ -167,6 +176,10 @@ package Bigints.Uints with SPARK_Mode => On is
             else Cond_Select'Result (I) = A (I)));
    --  Constant time select
 
+   function Shl_Vartime (Value : Uint; Amount : Natural) return Uint
+   with Pre => Amount <= BITS;
+   --  Shift integer left by `Amount` bits in variable time with Amount
+
    function Shl (Value : Uint; Amount : Natural) return Uint
    with Pre => Amount <= BITS;
    --  Shift integer left by `Amount` bits
@@ -183,6 +196,10 @@ package Bigints.Uints with SPARK_Mode => On is
    function Shl1 (Value : Uint) return Uint
    is (Uint_Carry'(Shl1 (Value)).Res);
    --  Shift integer left by one bit.
+
+   function Shr_Vartime (Value : Uint; Amount : Natural) return Uint
+   with Pre => Amount <= BITS;
+   --  Shift integer right by `Amount` bits in variable time with Amount
 
    function Shr (Value : Uint; Amount : Natural) return Uint
    with Pre => Amount <= BITS;

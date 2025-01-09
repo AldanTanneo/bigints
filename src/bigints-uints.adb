@@ -228,6 +228,18 @@ is
       return Res;
    end Mul_Wide;
 
+   function Mul_Limb (A : Uint; B : U64) return Uint_Carry is
+      Res   : Uint := A;
+      Carry : Tuple := (0, 0);
+   begin
+      for I in 1 .. N loop
+         Carry := Mac (0, Res (I), B, Carry.Snd);
+         Res (I) := Carry.Fst;
+      end loop;
+
+      return (Res, Carry.Snd);
+   end Mul_Limb;
+
    function "*" (A, B : Uint) return Uint is
    begin
       return Truncate (Mul_Wide (A, B));
@@ -423,6 +435,13 @@ is
       end loop;
       return Res = 0;
    end "=";
+
+   overriding
+   function "<" (A, B : Uint) return Boolean is
+      Res : constant Uint_Carry := Sub_Borrow (B, A, 0);
+   begin
+      return Res.Carry /= 0;
+   end "<";
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice) is
       use Const_Choice;
