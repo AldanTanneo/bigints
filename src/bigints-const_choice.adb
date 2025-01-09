@@ -36,11 +36,9 @@ is
    end Lsb;
 
    function Choice_From_Condition (Cond : Boolean) return Choice is
-      procedure Opt_Barrier with
-         Global => null, Always_Terminates, Inline_Always;
-      procedure Opt_Barrier with
-         SPARK_Mode => Off
-      is
+      procedure Opt_Barrier
+      with Global => null, Always_Terminates, Inline_Always;
+      procedure Opt_Barrier with SPARK_Mode => Off is
       begin
          System.Machine_Code.Asm ("", Volatile => True);
       end Opt_Barrier;
@@ -70,5 +68,26 @@ is
    begin
       return A xor (Mask and (A xor B));
    end Cond_Select;
+
+   procedure CSwap (A, B : in out U32; C : Choice) is
+      Tmp : constant U32 := A;
+   begin
+      A := Cond_Select (A, B, C);
+      B := Cond_Select (B, Tmp, C);
+   end CSwap;
+
+   procedure CSwap (A, B : in out U64; C : Choice) is
+      Tmp : constant U64 := A;
+   begin
+      A := Cond_Select (A, B, C);
+      B := Cond_Select (B, Tmp, C);
+   end CSwap;
+
+   procedure CSwap (A, B : in out U128; C : Choice) is
+      Tmp : constant U128 := A;
+   begin
+      A := Cond_Select (A, B, C);
+      B := Cond_Select (B, Tmp, C);
+   end CSwap;
 
 end Bigints.Const_Choice;

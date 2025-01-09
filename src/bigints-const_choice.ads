@@ -62,6 +62,30 @@ is
        (if To_Bool (C) then Cond_Select'Result = B
         else Cond_Select'Result = A);
 
+   procedure CSwap (A, B : in out U32; C : Choice)
+   with
+     Inline,
+     Post =>
+       (if To_Bool (C) then B = A'Old and then A = B'Old
+        else A = A'Old and then B = B'Old);
+
+   procedure CSwap (A, B : in out U64; C : Choice)
+   with
+     Inline,
+     Post =>
+       (if To_Bool (C) then B = A'Old and then A = B'Old
+        else A = A'Old and then B = B'Old);
+
+   procedure CSwap (A, B : in out U128; C : Choice)
+   with
+     Inline,
+     Post =>
+       (if To_Bool (C) then B = A'Old and then A = B'Old
+        else A = A'Old and then B = B'Old);
+
+   TRUTHY : constant Choice;
+   FALSEY : constant Choice;
+
 private
    type Choice is new U64
    with
@@ -70,5 +94,8 @@ private
 
    function To_Bool (C : Choice) return Boolean
    is (C /= 0);
+
+   TRUTHY : constant Choice := Choice (U64'Last);
+   FALSEY : constant Choice := 0;
 
 end Bigints.Const_Choice;
