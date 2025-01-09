@@ -1,3 +1,6 @@
+pragma Warning_As_Error ("intrinsic binding type mismatch");
+pragma Warning_As_Error ("profile of * doesn't match the builtin it binds");
+
 package Bigints.Machine_Ints
   with SPARK_Mode => On
 is
@@ -31,7 +34,7 @@ is
 
       function Leading_Zeros_64 (Value : U64) return Natural
       with
-        Pre => Value > 0, --  __builtin_clzl is undefined for 0
+        Pre => Value > 0, --  __builtin_clzll is undefined for 0
         Post =>
           Leading_Zeros_64'Result < 64
           and then (Value * 2 ** Leading_Zeros_64'Result)
@@ -41,6 +44,32 @@ is
         Global => null,
         Inline;
       pragma Import (Intrinsic, Leading_Zeros_64, "__builtin_clzll");
+
+      function Trailing_Zeros_32 (Value : U32) return Natural
+      with
+        Pre => Value > 0, --  __builtin_ctz is undefined for 0
+        Post =>
+          Trailing_Zeros_32'Result < 32
+          and then (Value / 2 ** Trailing_Zeros_32'Result)
+                   * 2 ** Trailing_Zeros_32'Result
+                   = Value
+          and then Value / 2 ** (Trailing_Zeros_32'Result) mod 2 = 1,
+        Global => null,
+        Inline;
+      pragma Import (Intrinsic, Trailing_Zeros_32, "__builtin_ctz");
+
+      function Trailing_Zeros_64 (Value : U64) return Natural
+      with
+        Pre => Value > 0, --  __builtin_ctzll is undefined for 0
+        Post =>
+          Trailing_Zeros_64'Result < 64
+          and then (Value / 2 ** Trailing_Zeros_64'Result)
+                   * 2 ** Trailing_Zeros_64'Result
+                   = Value
+          and then Value / 2 ** (Trailing_Zeros_64'Result) mod 2 = 1,
+        Global => null,
+        Inline;
+      pragma Import (Intrinsic, Trailing_Zeros_64, "__builtin_ctzll");
    end Builtins;
 
    function Leading_Zeros (Value : U32) return Natural
@@ -54,6 +83,18 @@ is
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 31,
      Inline_Always;
 
+   function Trailing_Zeros (Value : U32) return Natural
+   is (Builtins.Trailing_Zeros_32 (Value))
+   with
+     Pre => Value > 0,
+     Post =>
+       Trailing_Zeros'Result < 32
+       and then (Value / 2 ** Trailing_Zeros'Result)
+                * 2 ** Trailing_Zeros'Result
+                = Value
+       and then Value / 2 ** (Trailing_Zeros'Result) mod 2 = 1,
+     Inline_Always;
+
    function Shift_Left (Value : U32; Amount : Natural) return U32
    with
      Pre => Amount < 32,
@@ -63,6 +104,7 @@ is
      Convention => Intrinsic,
      Static,
      Inline_Always;
+
    function Shift_Right (Value : U32; Amount : Natural) return U32
    with
      Pre => Amount < 32,
@@ -84,6 +126,18 @@ is
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 63,
      Inline_Always;
 
+   function Trailing_Zeros (Value : U64) return Natural
+   is (Builtins.Trailing_Zeros_64 (Value))
+   with
+     Pre => Value > 0,
+     Post =>
+       Trailing_Zeros'Result < 64
+       and then (Value / 2 ** Trailing_Zeros'Result)
+                * 2 ** Trailing_Zeros'Result
+                = Value
+       and then Value / 2 ** (Trailing_Zeros'Result) mod 2 = 1,
+     Inline_Always;
+
    function Shift_Left (Value : U64; Amount : Natural) return U64
    with
      Pre => Amount < 64,
@@ -93,6 +147,7 @@ is
      Convention => Intrinsic,
      Static,
      Inline_Always;
+
    function Shift_Right (Value : U64; Amount : Natural) return U64
    with
      Pre => Amount < 64,
@@ -112,6 +167,7 @@ is
      Convention => Intrinsic,
      Static,
      Inline_Always;
+
    function Shift_Right (Value : U128; Amount : Natural) return U128
    with
      Pre => Amount < 128,
