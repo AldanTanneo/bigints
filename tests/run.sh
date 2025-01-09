@@ -11,5 +11,6 @@ ORIG="$(pwd)"
 cd src
 export TEST_FILES=$(join ':' *.adb)
 cd "$ORIG"
-alr run < /dev/null
+alr build --development
+./bin/runner < /dev/null
 printf "\e[?25h"
