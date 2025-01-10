@@ -10,35 +10,60 @@ package Bigints.Modular with
   Initial_Condition => (for some I in 1 .. Uints.N => P (I) /= 0)
 is
    MODULUS : constant Uints.Uint := P;
-   N       : constant Positive   := Uints.N;
 
    type Fp is private;
+   --  Element of GF(P)
 
    ONE  : constant Fp;
    ZERO : constant Fp;
 
    function Create (U : Uints.Uint) return Fp;
+   --  Create a field element from a Uint
+
    function Create (U : U64) return Fp;
+   --  Create a field element from a U64
+
    function Retrieve (F : Fp) return Uints.Uint;
+   --  Retrieve an integer representing the field element
 
    function "+" (A, B : Fp) return Fp;
+   --  Addition in GF(P)
+
    function "-" (A : Fp) return Fp;
+   --  Negation in GF(P)
+
    function "-" (A, B : Fp) return Fp;
+   --  Substraction in GF(P)
+
    function "*" (A, B : Fp) return Fp;
+   --  Multiplication in GF(P);
+
    function "**" (A : Fp; N : Uints.Uint) return Fp;
+   --  Exponentiation in GF(P)
 
    overriding function "=" (A, B : Fp) return Boolean with
      Inline;
+   --  Constant time equality check
 
    function Pow (A : Fp; N : Uints.Uint) return Fp;
+   --  Constant time exponentiation
+
    function Pow_Vartime (A : Fp; N : Uints.Uint) return Fp;
+   --  Variable time exponentiation, constant time with A
+
    function Div_By_2 (A : Fp) return Fp;
+   --  Division by 2 in GF(P)
+
    function Inv (A : Fp) return Fp with
      Pre => A /= ZERO;
+   --  Constant time inversion in GF(P) (fermat method)
+
    function Inv_Vartime (A : Fp) return Fp with
      Pre => A /= ZERO;
+   --  Variable time (wrt Modulus) exponentiation in GF(P)
 
 private
+   N : constant Positive := Uints.N;
 
    use Uints;
    type Fp is new Uint;
