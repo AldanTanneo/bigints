@@ -39,6 +39,8 @@ is
    --  Parse a big-endian (most significant digit first) hexadecimal string
    --  into a Uint
 
+   function From_U64 (X : U64) return Uint is ([X, others => 0]);
+
    function Concat (Lo, Hi : Uint) return Wide_Uint with
      Post =>
       (for all I in 1 .. N => Concat'Result (I) = Lo (I))
@@ -147,6 +149,15 @@ is
    --  Constant time equality check
 
    overriding function "<" (A, B : Uint) return Boolean with
+     Inline;
+
+   overriding function ">" (A, B : Uint) return Boolean is (B < A) with
+     Inline;
+
+   overriding function "<=" (A, B : Uint) return Boolean is (not (A > B)) with
+     Inline;
+
+   overriding function ">=" (A, B : Uint) return Boolean is (not (A < B)) with
      Inline;
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice) with

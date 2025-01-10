@@ -25,9 +25,18 @@ is
    function "-" (A : Fp) return Fp;
    function "-" (A, B : Fp) return Fp;
    function "*" (A, B : Fp) return Fp;
+   function "**" (A : Fp; N : Uints.Uint) return Fp;
+
+   overriding function "=" (A, B : Fp) return Boolean with
+     Inline;
+
+   function Pow (A : Fp; N : Uints.Uint) return Fp;
+   function Pow_Vartime (A : Fp; N : Uints.Uint) return Fp;
    function Div_By_2 (A : Fp) return Fp;
-   function Inv (Y : Fp) return Fp with
-     Pre => Y /= ZERO;
+   function Inv (A : Fp) return Fp with
+     Pre => A /= ZERO;
+   function Inv_Vartime (A : Fp) return Fp with
+     Pre => A /= ZERO;
 
 private
 
@@ -40,9 +49,12 @@ private
    function Montgomery_Reduction
      (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint;
 
+   overriding function "=" (A, B : Fp) return Boolean is (Uint (A) = Uint (B));
+
    package Uints_Modulo is new Uints.Modulo_Ops;
    package Uints_Wide is new Bigints.Uints (2 * N);
 
+   P_MINUS_TWO       : constant Uint    := P - Uints.From_U64 (2);
    ZERO              : constant Fp      := Fp (Uints.ZERO);
    ONE               : constant Fp      := Fp ((MAX mod P) + Uints.ONE);
    R2                : constant Uint    :=

@@ -101,6 +101,35 @@ is
       return Fp (Montgomery_Reduction (W, P, MOD_NEG_INV));
    end "*";
 
+   function Pow (A : Fp; N : Uint) return Fp is
+      use Const_Choice;
+      Y : Fp := ONE;
+      X : Fp := A;
+      C : Choice;
+   begin
+      for I in 0 .. BITS - 1 loop
+         C := Choice_From_Condition (Bit_Vartime (N, I));
+         Y := Cond_Select (Y, X * Y, C);
+         X := X * X;
+      end loop;
+      return Y;
+   end Pow;
+
+   function Pow_Vartime (A : Fp; N : Uint) return Fp is
+      Y : Fp := ONE;
+      X : Fp := A;
+   begin
+      for I in 0 .. BITS - 1 loop
+         if Bit_Vartime (N, I) then
+            Y := Y * X;
+         end if;
+         X := X * X;
+      end loop;
+      return Y;
+   end Pow_Vartime;
+
+   function "**" (A : Fp; N : Uint) return Fp is (Pow (A, N));
+
    function Div_By_2 (A : Fp) return Fp is
       Half_Carry   : constant Uint_Carry          := Shr1 (A);
       Is_Odd       : constant Const_Choice.Choice :=
@@ -112,126 +141,8 @@ is
       return Fp (Cond_Select (If_Even, If_Odd, Is_Odd));
    end Div_By_2;
 
-   function Inv_2k_Vartime (K : Natural) return Fp is
-      Res : Fp := ONE;
-   begin
-      for I in 1 .. K loop
-         Res := Div_By_2 (Res);
-      end loop;
-      return Res;
-   end Inv_2k_Vartime;
+   function Inv (A : Fp) return Fp is (Pow (A, P_MINUS_TWO));
 
-   function Len (X : Uint) return Natural with
-     Inline,
-     Post =>
-      Len'Result <= BITS
-      and then ((Len'Result = 0) = (for all I in 1 .. N => X (I) = 0))
-   is
-   begin
-      return BITS - Leading_Zeros (X);
-   end Len;
-
-   Len_P       : constant Positive := Len (P);
-   K           : constant Natural  := 32;
-   TwoKm1      : constant U64      := Shift_Left (1, K - 1) - 1;
-   Inv_K1_2LdK : constant Fp       :=
-     Inv_2k_Vartime ((K - 1) * ((2 * Len_P + K - 3) / (K - 1)));
-
-   function Inv (Y : Fp) return Fp is
-      --  Implement Optimized Extended Binary GCD
-      --  (https://eprint.iacr.org/2020/972.pdf)
-      use Const_Choice;
-
-      function Mul_Add_Shift
-        (A : Uint; F : U64; B : Uint; G : U64; K : Natural) return Uint with
-        Pre => K in 1 .. 64
-      is
-         AF : constant Uint_Carry := Mul_Limb (A, F);
-         BG : constant Uint_Carry := Mul_Limb (B, G);
-         R  : Uint_Carry := Add_Carry (AF.Res, BG.Res, AF.Carry + BG.Carry);
-      begin
-         R.Res     := Shr_Vartime (R.Res, K);
-         R.Res (N) := R.Res (N) or Shift_Left (R.Carry, 64 - K);
-         return R.Res;
-      end Mul_Add_Shift;
-
-      function Mul_Vec_Mod (U, V : Fp; F, G : U64) return Fp is
-         F_Neg : constant Choice := Choice_From_Condition (F >= 2**63);
-         G_Neg : constant Choice := Choice_From_Condition (G >= 2**63);
-
-         F_Abs : constant U64 := Cond_Select (F, -F, F_Neg);
-         G_Abs : constant U64 := Cond_Select (G, -G, G_Neg);
-
-         U_F : constant Fp := Cond_Select (U, -U, F_Neg) * Create (F_Abs);
-         V_G : constant Fp := Cond_Select (V, -V, G_Neg) * Create (G_Abs);
-      begin
-         return U_F + V_G;
-      end Mul_Vec_Mod;
-
-      A : Uint := Retrieve (Y);
-      U : Fp   := ONE;
-      B : Uint := P;
-      V : Fp   := ZERO;
-
-      L      : Natural;
-      A2, B2 : Uint;
-      U2, V2 : Fp;
-
-   begin
-      for I in 1 .. (2 * Len_P + K - 2) / K loop
-         L  := Natural'Max (Natural'Max (Len (A), Len (B)), 2 * K);
-         A2 :=
-           [A (1) and TwoKm1, others => 0] or Shl (Shr (A, L - K - 1), K - 1);
-         B2 :=
-           [B (1) and TwoKm1, others => 0] or Shl (Shr (B, L - K - 1), K - 1);
-         declare
-            F0                : U64 := 1;
-            G0                : U64 := 0;
-            F1                : U64 := 0;
-            G1                : U64 := 1;
-            A2_Even, A2_Lt_B2 : Choice;
-            Swap, Lt_Zero     : Choice;
-         begin
-            for J in 1 .. K - 1 loop
-               A2_Even  := Choice_From_Condition (A2 (1) mod 2 = 0);
-               A2_Lt_B2 := Choice_From_Condition (A2 < B2);
-               Swap     := (not A2_Even) and A2_Lt_B2;
-               --  if A2 mod 2 == 0
-               A2       := Cond_Select (A2, Shr1 (A2), A2_Even);
-               --  else
-               --    if A2 < B2
-               CSwap (A2, B2, Swap);
-               CSwap (F0, F1, Swap);
-               CSwap (G0, G1, Swap);
-               --    end if
-               A2 := Cond_Select (Shr1 (A2 - B2), A2, A2_Lt_B2);
-               F0 := Cond_Select (F0 - F1, F0, A2_Lt_B2);
-               G0 := Cond_Select (G0 - G1, F0, A2_Lt_B2);
-               --  end if
-               F1 := Shift_Left (F1, 1);
-               G1 := Shift_Left (G1, 1);
-            end loop;
-            A2 := A;
-            B2 := B;
-            A  := Mul_Add_Shift (A2, F0, B2, G0, K - 1);
-            B  := Mul_Add_Shift (A2, F1, B2, G1, K - 1);
-
-            Lt_Zero := Choice_From_Condition (A (N) >= 2**63); -- B < 0
-            A       := Cond_Select (A, -A, Lt_Zero);
-            F0      := Cond_Select (F0, -F0, Lt_Zero);
-            G0      := Cond_Select (G0, -G0, Lt_Zero);
-            Lt_Zero := Choice_From_Condition (B (N) >= 2**63); -- B < 0
-            B       := Cond_Select (B, -B, Lt_Zero);
-            F1      := Cond_Select (F1, -F1, Lt_Zero);
-            G1      := Cond_Select (G1, -G1, Lt_Zero);
-
-            U2 := U;
-            V2 := V;
-            U  := Mul_Vec_Mod (U2, V2, F0, G0);
-            V  := Mul_Vec_Mod (U2, V2, F1, G1);
-         end;
-      end loop;
-      return V * Inv_K1_2LdK;
-   end Inv;
+   function Inv_Vartime (A : Fp) return Fp is (Pow_Vartime (A, P_MINUS_TWO));
 
 end Bigints.Modular;
