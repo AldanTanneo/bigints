@@ -1,23 +1,20 @@
 with System.Machine_Code;
 
-package body Bigints.Const_Choice
-  with SPARK_Mode => On
+package body Bigints.Const_Choice with
+  SPARK_Mode => On
 is
 
-   overriding
-   function "not" (C : Choice) return Choice is
+   overriding function "not" (C : Choice) return Choice is
    begin
       return Choice (not U64 (C));
    end "not";
 
-   overriding
-   function "or" (A, B : Choice) return Choice is
+   overriding function "or" (A, B : Choice) return Choice is
    begin
       return Choice (U64 (A) or U64 (B));
    end "or";
 
-   overriding
-   function "and" (A, B : Choice) return Choice is
+   overriding function "and" (A, B : Choice) return Choice is
    begin
       return Choice (U64 (A) and U64 (B));
    end "and";
@@ -36,18 +33,19 @@ is
    end Lsb;
 
    function Choice_From_Condition (Cond : Boolean) return Choice is
-      procedure Opt_Barrier
-      with Global => null, Always_Terminates, Inline_Always;
-      procedure Opt_Barrier with SPARK_Mode => Off is
+      procedure Opt_Barrier with
+        Global => null, Always_Terminates, Inline_Always;
+      procedure Opt_Barrier with
+        SPARK_Mode => Off
+      is
       begin
          System.Machine_Code.Asm ("", Volatile => True);
       end Opt_Barrier;
 
       V : constant U64 := Boolean'Pos (Cond);
    begin
-      pragma
-        Assert
-          ((V = 0 and then -V = 0) or else (V = 1 and then -V = U64'Last));
+      pragma Assert
+        ((V = 0 and then -V = 0) or else (V = 1 and then -V = U64'Last));
       Opt_Barrier;
       return Choice (-V);
    end Choice_From_Condition;

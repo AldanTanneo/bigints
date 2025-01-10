@@ -1,10 +1,10 @@
-package body Bigints.Uints.Modulo_Ops
-  with SPARK_Mode => On
+package body Bigints.Uints.Modulo_Ops with
+  SPARK_Mode => On
 is
 
    function Add_Mod (A, B, P : Uint) return Uint is
-      WCarry  : constant Uint_Carry := Add_Carry (A, B, 0);
-      WBorrow : constant Uint_Carry := Sub_Borrow (WCarry.Res, P, 0);
+      WCarry  : constant Uint_Carry       := Add_Carry (A, B, 0);
+      WBorrow : constant Uint_Carry       := Sub_Borrow (WCarry.Res, P, 0);
       Mask    : constant Primitives.Tuple :=
         Primitives.Sub_Borrow (WCarry.Carry, 0, WBorrow.Carry);
    begin
@@ -12,8 +12,8 @@ is
    end Add_Mod;
 
    function Double_Mod (A, P : Uint) return Uint is
-      WCarry  : constant Uint_Carry := Shl1 (A);
-      WBorrow : constant Uint_Carry := Sub_Borrow (WCarry.Res, P, 0);
+      WCarry  : constant Uint_Carry       := Shl1 (A);
+      WBorrow : constant Uint_Carry       := Sub_Borrow (WCarry.Res, P, 0);
       Mask    : constant Primitives.Tuple :=
         Primitives.Sub_Borrow (WCarry.Carry, 0, WBorrow.Carry);
    begin

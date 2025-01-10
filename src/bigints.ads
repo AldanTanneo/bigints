@@ -1,4 +1,4 @@
-package Bigints
-  with SPARK_Mode => On
+package Bigints with
+  SPARK_Mode => On
 is
 end Bigints;

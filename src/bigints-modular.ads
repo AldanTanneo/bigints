@@ -6,11 +6,11 @@ generic
    with package Uints is new Bigints.Uints (<>);
    P : Uints.Uint;
 package Bigints.Modular with
-    SPARK_Mode => On,
-    Initial_Condition => (for some I in 1 .. Uints.N => P (I) /= 0)
+  SPARK_Mode        => On,
+  Initial_Condition => (for some I in 1 .. Uints.N => P (I) /= 0)
 is
    MODULUS : constant Uints.Uint := P;
-   N : constant Positive := Uints.N;
+   N       : constant Positive   := Uints.N;
 
    type Fp is private;
 
@@ -26,8 +26,8 @@ is
    function "-" (A, B : Fp) return Fp;
    function "*" (A, B : Fp) return Fp;
    function Div_By_2 (A : Fp) return Fp;
-   function Inv (Y : Fp) return Fp
-   with Pre => Y /= ZERO;
+   function Inv (Y : Fp) return Fp with
+     Pre => Y /= ZERO;
 
 private
 
@@ -43,16 +43,16 @@ private
    package Uints_Modulo is new Uints.Modulo_Ops;
    package Uints_Wide is new Bigints.Uints (2 * N);
 
-   ZERO              : constant Fp := Fp (Uints.ZERO);
-   ONE               : constant Fp := Fp ((MAX mod P) + Uints.ONE);
-   R2                : constant Uint :=
+   ZERO              : constant Fp      := Fp (Uints.ZERO);
+   ONE               : constant Fp      := Fp ((MAX mod P) + Uints.ONE);
+   R2                : constant Uint    :=
      Truncate
        (Wide_Uint
           (Uints_Wide."mod"
              (Uints_Wide.Uint (Mul_Wide (ONE, ONE)),
               Uints_Wide.Uint (Concat (P, Uints.ZERO)))));
-   INV_MOD           : constant Fp := Fp (Inv_Mod2k_Vartime (P, BITS));
-   MOD_NEG_INV       : constant U64 := -INV_MOD (1);
+   INV_MOD           : constant Fp      := Fp (Inv_Mod2k_Vartime (P, BITS));
+   MOD_NEG_INV       : constant U64     := -INV_MOD (1);
    MOD_LEADING_ZEROS : constant Natural :=
      Natural'Min (Leading_Zeros (P), BITS - 1);
 
