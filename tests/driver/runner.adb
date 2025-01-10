@@ -1,6 +1,5 @@
 with Ada.Characters.Latin_1;
 with Ada.Command_Line;
-with Ada.Command_Line.Environment;
 with Ada.Environment_Variables; use Ada.Environment_Variables;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;               use Ada.Text_IO;
@@ -8,6 +7,9 @@ with Ada.Unchecked_Deallocation;
 with GNAT.OS_Lib;               use GNAT.OS_Lib;
 
 procedure Runner is
+   function isatty (fd : File_Descriptor) return Integer;
+   pragma Import (C, isatty);
+
    ESC        : constant String := [Ada.Characters.Latin_1.ESC];
    Ansi_Dim   : constant String := ESC & "[2m";
    Ansi_Red   : constant String := ESC & "[1;31m";
@@ -54,7 +56,9 @@ procedure Runner is
       Code        : Integer;
       Success     : Boolean;
    begin
-      Put ("[  ... ] " & Test_Name & [Ada.Characters.Latin_1.CR]);
+      if isatty (1) = 1 then
+         Put ("[  ... ] " & Test_Name & [Ada.Characters.Latin_1.CR]);
+      end if;
       Flush;
       Spawn ("./bin/" & Test_Name, [], Output_File, Success, Code);
       Run_Id := Run_Id + 1;
