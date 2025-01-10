@@ -108,7 +108,7 @@ is
       C : Choice;
    begin
       for I in 0 .. BITS - 1 loop
-         C := Choice_From_Condition (Bit_Vartime (N, I));
+         C := Bit_Vartime (N, I);
          Y := Cond_Select (Y, X * Y, C);
          X := X * X;
       end loop;
@@ -131,12 +131,15 @@ is
    function "**" (A : Fp; N : Uint) return Fp is (Pow (A, N));
 
    function Div_By_2 (A : Fp) return Fp is
-      Half_Carry   : constant Uint_Carry          := Shr1 (A);
-      Is_Odd       : constant Const_Choice.Choice :=
-        Const_Choice.Choice_From_Condition (Half_Carry.Carry /= 0);
-      Half_Modulus : constant Uint                := Shr1 (P);
-      If_Even      : constant Uint                := Half_Carry.Res;
-      If_Odd       : constant Uint := Add_Carry (If_Even, Half_Modulus, 1).Res;
+      use Const_Choice;
+
+      Half_Carry   : constant Uint_Carry := Shr1 (A);
+      Half_Modulus : constant Uint       := Shr1 (P);
+
+      Is_Odd : constant Choice := Choice_From_Bit (Half_Carry.Carry);
+
+      If_Even : constant Uint := Half_Carry.Res;
+      If_Odd  : constant Uint := Add_Carry (If_Even, Half_Modulus, 1).Res;
    begin
       return Fp (Cond_Select (If_Even, If_Odd, Is_Odd));
    end Div_By_2;

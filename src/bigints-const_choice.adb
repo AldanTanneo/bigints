@@ -50,6 +50,16 @@ is
       return Choice (-V);
    end Choice_From_Condition;
 
+   function Choice_From_Bit (Bit : U64) return Choice is
+   begin
+      return Choice (-Bit);
+   end Choice_From_Bit;
+
+   function Choice_From_Mask (Mask : U64) return Choice is
+   begin
+      return Choice (Mask);
+   end Choice_From_Mask;
+
    function Cond_Select (A, B : U32; C : Choice) return U32 is
       Mask : constant U32 := U32 (Shift_Right (C, 32));
    begin

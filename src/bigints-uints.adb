@@ -345,7 +345,7 @@ is
             Tmp    := Sub_Borrow (X_Hi, Carry, Borrow);
             Borrow := Tmp.Snd;
 
-            Ct_Borrow := Choice_From_Condition (Borrow /= 0);
+            Ct_Borrow := Choice_From_Mask (Borrow);
             Carry     := 0;
             for I in 1 .. Xi loop
                Tmp   :=
@@ -404,9 +404,8 @@ is
          declare
             Xi : constant U64 := B (1) and 1;
          begin
-            B :=
-              Cond_Select
-                (B, B - Value, Const_Choice.Choice_From_Condition (Xi = 1));
+            pragma Assert (Xi = 0 or else Xi = 1);
+            B := Cond_Select (B, B - Value, Const_Choice.Choice_From_Bit (Xi));
             B := Shr1 (B);
             X := X or Shl (Uint'[1 => Xi, others => 0], I - 1);
          end;
@@ -419,6 +418,17 @@ is
       Bit  : constant Natural := Amount mod 64;
    begin
       return Boolean'Val (Shift_Right (Value (Limb + 1), Bit) and 1);
+   end Bit_Vartime;
+
+   function Bit_Vartime
+     (Value : Uint; Amount : Natural) return Const_Choice.Choice
+   is
+      Limb : constant Natural := Amount / 64;
+      Bit  : constant Natural := Amount mod 64;
+   begin
+      return
+        Const_Choice.Choice_From_Bit
+          (Shift_Right (Value (Limb + 1), Bit) and 1);
    end Bit_Vartime;
 
    overriding function "=" (A, B : Uint) return Boolean is

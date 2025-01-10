@@ -49,7 +49,7 @@ is
    --  Constant time exponentiation
 
    function Pow_Vartime (A : Fp; N : Uints.Uint) return Fp;
-   --  Variable time exponentiation, constant time with A
+   --  Variable time (wrt Modulus) exponentiation
 
    function Div_By_2 (A : Fp) return Fp;
    --  Division by 2 in GF(P)
@@ -60,13 +60,13 @@ is
 
    function Inv_Vartime (A : Fp) return Fp with
      Pre => A /= ZERO;
-   --  Variable time (wrt Modulus) exponentiation in GF(P)
+   --  Variable time (wrt Modulus) inversion in GF(P)
 
 private
    N : constant Positive := Uints.N;
 
    use Uints;
-   type Fp is new Uint;
+   type Fp is new Uints.Uint;
 
    function Sub_Mod_With_Carry
      (Lhs : Uint; Carry : U64; Rhs, P : Uint) return Uint;
@@ -81,7 +81,7 @@ private
 
    P_MINUS_TWO       : constant Uint    := P - Uints.From_U64 (2);
    ZERO              : constant Fp      := Fp (Uints.ZERO);
-   ONE               : constant Fp      := Fp ((MAX mod P) + Uints.ONE);
+   ONE               : constant Fp      := Fp ((Uints.MAX mod P) + Uints.ONE);
    R2                : constant Uint    :=
      Truncate
        (Wide_Uint
@@ -92,5 +92,4 @@ private
    MOD_NEG_INV       : constant U64     := -INV_MOD (1);
    MOD_LEADING_ZEROS : constant Natural :=
      Natural'Min (Leading_Zeros (P), BITS - 1);
-
 end Bigints.Modular;

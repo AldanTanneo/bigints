@@ -38,6 +38,14 @@ is
    function Choice_From_Condition (Cond : Boolean) return Choice with
      Post => To_Bool (Choice_From_Condition'Result) = Cond;
 
+   function Choice_From_Bit (Bit : U64) return Choice with
+     Pre  => Bit in 0 .. 1,
+     Post => To_Bool (Choice_From_Bit'Result) = (Bit = 1);
+
+   function Choice_From_Mask (Mask : U64) return Choice with
+     Pre  => Mask = 0 or else Mask = U64'Last,
+     Post => To_Bool (Choice_From_Mask'Result) = (Mask /= 0);
+
    function Cond_Select (A, B : U32; C : Choice) return U32 with
      Inline,
      Post =>

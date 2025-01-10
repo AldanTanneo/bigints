@@ -144,6 +144,11 @@ is
      Pre => Amount < BITS;
    --  Variable time relative to Amount
 
+   function Bit_Vartime
+     (Value : Uint; Amount : Natural) return Const_Choice.Choice with
+     Pre => Amount < BITS;
+   --  Variable time relative to Amount
+
    overriding function "=" (A, B : Uint) return Boolean with
      Inline, Post => "="'Result = (for all I in 1 .. N => A (I) = B (I));
    --  Constant time equality check
