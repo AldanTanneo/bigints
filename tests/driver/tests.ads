@@ -25,6 +25,10 @@ package Tests is
    function To_Wide_Uint (A : Big_Natural) return U256s.Wide_Uint;
    function To_U64 (A : Big_Natural) return U64;
 
+   procedure Put_U64 (A : U64);
+   procedure Put_U256 (A : U256);
+   procedure Put_Fp (A : Fp);
+
    procedure Assert
      (Condition : Boolean; Msg : String := "";
       Test_Name : String  := GNAT.Source_Info.Enclosing_Entity;
