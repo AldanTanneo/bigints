@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: alire-project/setup-alire@v3
+      - uses: alire-project/setup-alire@v4
       - run: alr build --validation
       - run: alr gnatprove --warnings=error
       - run: cat ./obj/validation/gnatprove/gnatprove.out
@@ -28,5 +28,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: alire-project/setup-alire@v3
+      - uses: alire-project/setup-alire@v4
       - run: cd tests && ./run.sh
