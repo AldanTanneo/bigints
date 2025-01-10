@@ -30,6 +30,7 @@ project Bigints is
          ,"--level=4"
          ,"--no-inlining"
          ,"--no-loop-unrolling"
+         ,"--checks-as-errors=on"
       );
    end Prove;
 

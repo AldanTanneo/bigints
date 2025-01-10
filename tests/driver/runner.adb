@@ -1,5 +1,6 @@
 with Ada.Characters.Latin_1;
 with Ada.Command_Line;
+with Ada.Command_Line.Environment;
 with Ada.Environment_Variables; use Ada.Environment_Variables;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;               use Ada.Text_IO;
@@ -17,27 +18,27 @@ procedure Runner is
    Passed_Tests : Natural := 0;
    Failed_Tests : Natural := 0;
 
-   procedure Free_Arg_List is new
-     Ada.Unchecked_Deallocation (Argument_List, Argument_List_Access);
+   procedure Free_Arg_List is new Ada.Unchecked_Deallocation
+     (Argument_List, Argument_List_Access);
 
    procedure Put_Success (Msg : String) is
    begin
-      Put_Line (Ansi_Green & "  PASS " & Ansi_Reset & Msg);
+      Put_Line ("[ " & Ansi_Green & "PASS" & Ansi_Reset & " ] " & Msg);
       Passed_Tests := Passed_Tests + 1;
    end Put_Success;
    procedure Put_Failure (Msg : String) is
    begin
-      Put_Line (Ansi_Red & "  FAIL " & Ansi_Reset & Msg);
+      Put_Line ("[ " & Ansi_Red & "FAIL" & Ansi_Reset & " ] " & Msg);
       Failed_Tests := Failed_Tests + 1;
    end Put_Failure;
 
    function Remove_Suffix (Source, Suffix : String) return String is
    begin
       if Source'Length < Suffix'Length
-        or else (Suffix'Length /= 0
-                 and then Source
-                            (Source'Last + 1 - Suffix'Length .. Source'Last)
-                          /= Suffix)
+        or else
+        (Suffix'Length /= 0
+         and then Source (Source'Last + 1 - Suffix'Length .. Source'Last) /=
+           Suffix)
       then
          raise Program_Error
            with "invalid input: missing " & Suffix & " suffix";
@@ -48,15 +49,12 @@ procedure Runner is
    procedure Run_Test (Test_File : String) is
       Test_Name   : constant String := Remove_Suffix (Test_File, ".adb");
       Output_File : constant String :=
-        "./obj/TMP_TEST_FILE__"
-        & Test_Name
-        & "__"
-        & Run_Id'Image (2 .. Run_Id'Image'Last)
-        & ".out";
+        "./obj/TMP_TEST_FILE__" & Test_Name & "__" &
+        Run_Id'Image (2 .. Run_Id'Image'Last) & ".out";
       Code        : Integer;
       Success     : Boolean;
    begin
-      Put ("   ... " & Test_Name & [Ada.Characters.Latin_1.CR]);
+      Put ("[  ... ] " & Test_Name & [Ada.Characters.Latin_1.CR]);
       Flush;
       Spawn ("./bin/" & Test_Name, [], Output_File, Success, Code);
       Run_Id := Run_Id + 1;
@@ -84,8 +82,8 @@ procedure Runner is
 
    Tests       : constant String := Value ("TEST_FILES", "");
    Separator   : constant String := ":";
-   Idx         : Positive := 1;
-   Total_Tests : Natural := 0;
+   Idx         : Positive        := 1;
+   Total_Tests : Natural         := 0;
 begin
    if Tests = "" then
       return;
@@ -108,12 +106,8 @@ begin
    Total_Tests := Failed_Tests + Passed_Tests;
 
    Put_Line
-     ("Tests:"
-      & Total_Tests'Image
-      & ", Passed:"
-      & Passed_Tests'Image
-      & ", Failed:"
-      & Failed_Tests'Image);
+     ("Tests:" & Total_Tests'Image & ", Passed:" & Passed_Tests'Image &
+      ", Failed:" & Failed_Tests'Image);
 
    if Failed_Tests /= 0 then
       Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);

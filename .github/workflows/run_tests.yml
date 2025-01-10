@@ -1,0 +1,31 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/.gitignore"
+      - "README.md"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/.gitignore"
+      - "README.md"
+  workflow_dispatch:
+
+jobs:
+  gnatprove:
+    name: GNATProve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: alire-project/setup-alire@v3
+      - run: alr build
+      - run: alr gnatprove --warnings=error
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: alire-project/setup-alire@v3
+      - run: cd tests && ./run.sh

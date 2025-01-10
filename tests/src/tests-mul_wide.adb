@@ -45,7 +45,7 @@ begin
       [1 => 1, 2 .. 4 => 0, 5 => U64'Last - 1, 6 .. 8 => U64'Last],
       "(2**256-1)**2 != 2**512 - 2**257 + 1");
 
-   for I in 1 .. 10000 loop
+   for I in 1 .. 100000 loop
       X := Random_U256;
       Y := Random_U256;
       Res := Mul_Wide (X, Y);

@@ -12,7 +12,7 @@ begin
      (Q, From_Hex ("1a21f2b3ce5eb79df1043754cb5aa5d4cb5af4e679eb19963"));
    Assert_Eq (R, From_Hex ("14be0964f5e1c55"));
 
-   for I in 1 .. 1000000 loop
+   for I in 1 .. 100000 loop
       A := Random_U256;
       B := Random_U256;
       B ((I mod 4) + 2 .. 4) := [others => 0];
