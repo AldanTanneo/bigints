@@ -9,6 +9,7 @@ package Bigints.Modular with
     SPARK_Mode => On,
     Initial_Condition => (for some I in 1 .. Uints.N => P (I) /= 0)
 is
+   MODULUS : constant Uints.Uint := P;
    N : constant Positive := Uints.N;
 
    type Fp is private;
