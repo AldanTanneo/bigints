@@ -1,7 +1,8 @@
 with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
 package Bigints.Const_Choice with
-  SPARK_Mode => On
+  SPARK_Mode => On,
+  Pure
 is
    type Choice is private;
 

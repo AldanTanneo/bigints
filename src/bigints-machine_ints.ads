@@ -2,7 +2,8 @@ pragma Warning_As_Error ("intrinsic binding type mismatch");
 pragma Warning_As_Error ("profile of * doesn't match the builtin it binds");
 
 package Bigints.Machine_Ints with
-  SPARK_Mode => On
+  SPARK_Mode => On,
+  Pure
 is
    pragma Warnings (GNATProve, Off, "pragma * ignored (not yet supported)");
    pragma Extensions_Allowed (On);

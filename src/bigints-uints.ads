@@ -5,7 +5,8 @@ with Bigints.Const_Choice;
 generic
    N : Positive;
 package Bigints.Uints with
-  SPARK_Mode => On
+  SPARK_Mode => On,
+  Pure
 is
    BITS : constant Positive := 64 * N;
    pragma Assert (64 * N < Positive'Last);

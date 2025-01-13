@@ -1,7 +1,8 @@
 with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
 package Bigints.Primitives with
-  SPARK_Mode => On
+  SPARK_Mode => On,
+  Pure
 is
    type Tuple is record
       Fst, Snd : U64;

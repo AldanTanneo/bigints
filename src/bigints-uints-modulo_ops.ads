@@ -1,6 +1,7 @@
 generic
 package Bigints.Uints.Modulo_Ops with
-  SPARK_Mode => On
+  SPARK_Mode => On,
+  Pure
 is
    function Add_Mod (A, B, P : Uint) return Uint with
      Pre => (for some I in 1 .. N => P (I) /= 0);
