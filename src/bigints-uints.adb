@@ -52,27 +52,13 @@ is
    end Concat;
 
    function Truncate (A : Wide_Uint) return Uint is
-      Res : Uint with
-        Relaxed_Initialization;
    begin
-      for I in 1 .. N loop
-         Res (I) := A (I);
-         pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = A (J));
-      end loop;
-      return Res;
+      return Uint (A (1 .. N));
    end Truncate;
 
    function Truncate_Upper (A : Wide_Uint) return Uint is
-      Res : Uint with
-        Relaxed_Initialization;
    begin
-      for I in 1 .. N loop
-         Res (I) := A (N + I);
-         pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = A (N + J));
-      end loop;
-      return Res;
+      return Uint (A (N + 1 .. 2 * N));
    end Truncate_Upper;
 
    function Neg (A : Uint) return Uint is

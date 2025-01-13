@@ -40,9 +40,11 @@ is
    --  Parse a big-endian (most significant digit first) hexadecimal string
    --  into a Uint
 
-   function From_U64 (X : U64) return Uint is ([X, others => 0]);
+   function From_U64 (X : U64) return Uint is ([X, others => 0]) with
+     Inline;
 
    function Concat (Lo, Hi : Uint) return Wide_Uint with
+     Inline,
      Post =>
       (for all I in 1 .. N => Concat'Result (I) = Lo (I))
       and then (for all I in 1 .. N => Concat'Result (N + I) = Hi (I));
@@ -50,10 +52,11 @@ is
    --  the lower limbs
 
    function Truncate (A : Wide_Uint) return Uint with
-     Post => (for all I in 1 .. N => A (I) = Truncate'Result (I));
+     Inline, Post => (for all I in 1 .. N => A (I) = Truncate'Result (I));
    --  Return the lower limbs as a Uint
 
    function Truncate_Upper (A : Wide_Uint) return Uint with
+     Inline,
      Post => (for all I in 1 .. N => A (N + I) = Truncate_Upper'Result (I));
    --  Return the higher limbs as a Uint
 
