@@ -3,7 +3,7 @@ procedure Tests.Mul_Mod is
 
    X, Y, Res : Fp;
 begin
-   for I in 1 .. 10000 loop
+   for I in 1 .. 100000 loop
       X   := Create (Random_U256);
       Y   := Create (Random_U256);
       Res := X * Y;

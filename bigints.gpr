@@ -24,7 +24,7 @@ project Bigints is
 
    package Prove is
       for Proof_Switches ("Ada") use (
-          "-j6"
+          "-j0"
          ,"--timeout=60"
          ,"--mode=gold"
          ,"--level=4"
