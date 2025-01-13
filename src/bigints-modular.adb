@@ -1,4 +1,3 @@
-with Bigints.Const_Choice;
 with Bigints.Primitives; use Bigints.Primitives;
 
 package body Bigints.Modular with
@@ -147,5 +146,17 @@ is
    function Inv (A : Fp) return Fp is (Pow (A, P_MINUS_TWO));
 
    function Inv_Vartime (A : Fp) return Fp is (Pow_Vartime (A, P_MINUS_TWO));
+
+   overriding function Cond_Select
+     (A, B : Fp; C : Const_Choice.Choice) return Fp
+   is
+   begin
+      return Fp (Cond_Select (Uint (A), Uint (B), C));
+   end Cond_Select;
+
+   overriding procedure CSwap (A, B : in out Fp; C : Const_Choice.Choice) is
+   begin
+      CSwap (Uint (A), Uint (B), C);
+   end CSwap;
 
 end Bigints.Modular;

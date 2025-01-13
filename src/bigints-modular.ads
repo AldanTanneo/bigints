@@ -1,3 +1,4 @@
+with Bigints.Const_Choice;
 with Bigints.Uints;
 with Bigints.Uints.Modulo_Ops;
 with Bigints.Machine_Ints; use Bigints.Machine_Ints;
@@ -59,7 +60,18 @@ is
 
    function Inv_Vartime (A : Fp) return Fp with
      Pre => A /= ZERO;
-     --  Variable time (wrt Modulus) inversion in GF(P)
+   --  Variable time (wrt Modulus) inversion in GF(P)
+
+   function Cond_Select (A, B : Fp; C : Const_Choice.Choice) return Fp with
+     Post =>
+      (Cond_Select'Result = (if Const_Choice.To_Bool (C) then B else A));
+   --  Constant time select
+
+   procedure CSwap (A, B : in out Fp; C : Const_Choice.Choice) with
+     Post =>
+      (if Const_Choice.To_Bool (C) then (A = B'Old and then B = A'Old)
+       else (A = A'Old and then B = B'Old));
+   --  Constant time swap
 
 private
    N : constant Positive := Uints.N;

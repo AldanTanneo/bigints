@@ -1,8 +1,7 @@
 with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
 package Bigints.Const_Choice with
-  SPARK_Mode => On,
-  Pure
+  SPARK_Mode => On, Pure
 is
    type Choice is private;
 
@@ -18,6 +17,10 @@ is
 
    function "and" (A, B : Choice) return Choice with
      Post => To_Bool ("and"'Result) = (To_Bool (A) and then To_Bool (B)),
+     Inline_Always;
+
+   function "xor" (A, B : Choice) return Choice with
+     Post => To_Bool ("xor"'Result) = (To_Bool (A) xor To_Bool (B)),
      Inline_Always;
 
    function Lsb (C : Choice) return U32 with

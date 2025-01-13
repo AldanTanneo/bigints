@@ -19,6 +19,11 @@ is
       return Choice (U64 (A) and U64 (B));
    end "and";
 
+   overriding function "xor" (A, B : Choice) return Choice is
+   begin
+      return Choice (U64 (A) xor U64 (B));
+   end "xor";
+
    function Lsb (C : Choice) return U32 is
    begin
       return U32 (U64 (C) and 1);
