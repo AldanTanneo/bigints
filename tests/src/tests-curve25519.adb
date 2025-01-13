@@ -1,6 +1,8 @@
 with Bigints.Const_Choice; use Bigints.Const_Choice;
 
 procedure Tests.Curve25519 is
+   --  https://www.rfc-editor.org/rfc/rfc7748
+
    use F25519;
 
    type U8 is mod 2**8;
@@ -123,6 +125,11 @@ procedure Tests.Curve25519 is
    end X25519;
 
    K, U, Res : Bytes;
+   B         : constant Bytes :=
+     From_Hex
+       ("0900000000000000000000000000000000000000000000000000000000000000");
+
+   A_Private, A_Public, B_Private, B_Public : Bytes;
 begin
 
    --  RFC Test vectors 1
@@ -151,12 +158,8 @@ begin
 
    --  RFC Test vectors 2
 
-   K :=
-     From_Hex
-       ("0900000000000000000000000000000000000000000000000000000000000000");
-   U :=
-     From_Hex
-       ("0900000000000000000000000000000000000000000000000000000000000000");
+   K := B;
+   U := B;
 
    Res := X25519 (K, U);
    U   := K;
@@ -178,4 +181,30 @@ begin
        ("684cf59ba83309552800ef566f2f4d3c1c3887c49360e3875f2eb94d99532c51");
    Assert (K = Res);
 
+   --  RFC Diffie-Hellman test
+
+   A_Private :=
+     From_Hex
+       ("77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a");
+   A_Public  := X25519 (A_Private, B);
+   Assert
+     (A_Public =
+      From_Hex
+        ("8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a"));
+
+   B_Private :=
+     From_Hex
+       ("5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb");
+   B_Public  := X25519 (B_Private, B);
+   Assert
+     (B_Public =
+      From_Hex
+        ("de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"));
+
+   Res := X25519 (A_Private, B_Public);
+   Assert (Res = X25519 (B_Private, A_Public));
+   Assert
+     (Res =
+      From_Hex
+        ("4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"));
 end Tests.Curve25519;
