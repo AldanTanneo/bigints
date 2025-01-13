@@ -442,11 +442,11 @@ is
       return Res = 0;
    end "=";
 
-   overriding function "<" (A, B : Uint) return Boolean is
+   overriding function "<=" (A, B : Uint) return Boolean is
       Res : constant Uint_Carry := Sub_Borrow (B, A, 0);
    begin
-      return Res.Carry /= 0;
-   end "<";
+      return Res.Carry = 0;
+   end "<=";
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice) is
       use Const_Choice;

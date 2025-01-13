@@ -154,21 +154,21 @@ is
      Inline, Post => "="'Result = (for all I in 1 .. N => A (I) = B (I));
    --  Constant time equality check
 
-   overriding function "<" (A, B : Uint) return Boolean with
-     Inline;
-   --  Constant time less than comparison
-
-   overriding function ">" (A, B : Uint) return Boolean is (B < A) with
-     Inline;
-   --  Constant time greater than comparison
-
-   overriding function "<=" (A, B : Uint) return Boolean is (not (A > B)) with
+   overriding function "<=" (A, B : Uint) return Boolean with
      Inline;
    --  Constant time less or equal comparison
 
-   overriding function ">=" (A, B : Uint) return Boolean is (not (A < B)) with
+   overriding function ">=" (A, B : Uint) return Boolean is (B <= A) with
      Inline;
    --  Constant time greater or equal comparison
+
+   overriding function ">" (A, B : Uint) return Boolean is (not (A <= B)) with
+     Inline;
+   --  Constant time greater than comparison
+
+   overriding function "<" (A, B : Uint) return Boolean is (not (B <= A)) with
+     Inline;
+   --  Constant time less than comparison
 
    procedure CSwap (A, B : in out Uint; C : Const_Choice.Choice) with
      Post =>
