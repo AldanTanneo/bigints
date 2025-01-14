@@ -165,7 +165,6 @@ package body Tests is
          Test_Name, Line);
    end Assert_Eq;
 
-
    procedure Assert_Eq
      (Left, Right : Fp; Msg : String := "";
       Test_Name   : String  := GNAT.Source_Info.Enclosing_Entity;
