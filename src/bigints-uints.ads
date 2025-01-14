@@ -3,13 +3,11 @@ with Bigints.Primitives;
 with Bigints.Const_Choice;
 
 generic
-   N : Positive;
+   BITS : Positive;
 package Bigints.Uints with
-  SPARK_Mode => On,
-  Pure
+  SPARK_Mode => On, Pure, Initial_Condition => (BITS mod 64 = 0)
 is
-   BITS : constant Positive := 64 * N;
-   pragma Assert (64 * N < Positive'Last);
+   N : constant Positive := BITS / 64;
 
    type Uint is array (1 .. N) of U64;
    type Wide_Uint is array (1 .. 2 * N) of U64;

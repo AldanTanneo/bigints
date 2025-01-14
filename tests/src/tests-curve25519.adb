@@ -83,7 +83,7 @@ procedure Tests.Curve25519 is
       Z_3  : Fp          := ONE;
       Swap : Choice      := FALSEY;
    begin
-      for T in reverse 0 .. U256s.BITS - 1 loop
+      for T in reverse 0 .. 255 loop
          declare
             K_T : constant Choice := U256s.Bit_Vartime (K, T);
          begin

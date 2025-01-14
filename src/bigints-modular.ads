@@ -77,8 +77,6 @@ is
    --  Constant time swap
 
 private
-   N : constant Positive := Uints.N;
-
    use Uints;
    type Fp is new Uints.Uint;
 
@@ -91,7 +89,7 @@ private
    overriding function "=" (A, B : Fp) return Boolean is (Uint (A) = Uint (B));
 
    package Uints_Modulo is new Uints.Modulo_Ops;
-   package Uints_Wide is new Bigints.Uints (2 * N);
+   package Uints_Wide is new Bigints.Uints (2 * BITS);
 
    P_MINUS_TWO : constant Uint := P - Uints.From_U64 (2);
    ZERO        : constant Fp   := Fp (Uints.ZERO);
