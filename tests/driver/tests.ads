@@ -48,4 +48,9 @@ package Tests is
      (Left, Right : U256s.Wide_Uint; Msg : String := "";
       Test_Name   : String  := GNAT.Source_Info.Enclosing_Entity;
       Line        : Natural := GNAT.Source_Info.Line);
+
+   procedure Assert_Eq
+     (Left, Right : Fp; Msg : String := "";
+      Test_Name   : String  := GNAT.Source_Info.Enclosing_Entity;
+      Line        : Natural := GNAT.Source_Info.Line);
 end Tests;

@@ -41,6 +41,9 @@ is
    function "**" (A : Fp; N : Uints.Uint) return Fp;
    --  Exponentiation in GF(P)
 
+   function Square (A : Fp) return Fp;
+   --  Squaring in GF(P)
+
    overriding function "=" (A, B : Fp) return Boolean with
      Inline;
    --  Constant time equality check

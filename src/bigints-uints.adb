@@ -205,6 +205,43 @@ is
       end loop;
    end Impl_Schoolbook_Multiplication;
 
+   procedure Impl_Schoolbook_Squaring (Value : out Wide_Uint; Elt : Uint) is
+      Tmp   : Tuple;
+      Res   : U64 renames Tmp.Fst;
+      Carry : U64 renames Tmp.Snd;
+      Xi    : U64;
+      K     : Natural;
+   begin
+      Value := [others => 0];
+      for I in 2 .. N loop
+         Carry := 0;
+         Xi    := Elt (I);
+         for J in 1 .. I - 1 loop
+            K         := I + J - 1;
+            Tmp       := Mac (Value (K), Xi, Elt (J), Carry);
+            Value (K) := Res;
+         end loop;
+         Value (2 * I - 1) := Carry;
+      end loop;
+
+      Carry := 0;
+      for I in 1 .. 2 * N loop
+         Res       := Shift_Right (Value (I), 63);
+         Value (I) := Shift_Left (Value (I), 1) or Carry;
+         Carry     := Res;
+      end loop;
+
+      Carry := 0;
+      for I in 1 .. N loop
+         Xi                := Elt (I);
+         Tmp               := Mac (Value (2 * I - 1), Xi, Xi, Carry);
+         Value (2 * I - 1) := Res;
+
+         Tmp           := Overflowing_Add (Value (2 * I), Carry);
+         Value (2 * I) := Res;
+      end loop;
+   end Impl_Schoolbook_Squaring;
+
    function Mul_Wide (A, B : Uint) return Wide_Uint is
       Res : Wide_Uint;
    begin
@@ -228,6 +265,15 @@ is
    begin
       return Truncate (Mul_Wide (A, B));
    end "*";
+
+   function Square_Wide (A : Uint) return Wide_Uint is
+      Res : Wide_Uint;
+   begin
+      Impl_Schoolbook_Squaring (Res, A);
+      return Res;
+   end Square_Wide;
+
+   function Square (A : Uint) return Uint is (Truncate (Square_Wide (A)));
 
    function Div_Rem_Limb_With_Reciprocal
      (U : Uint; Re : Recip) return Quotient_Rem

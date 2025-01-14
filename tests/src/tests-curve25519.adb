@@ -94,19 +94,17 @@ procedure Tests.Curve25519 is
          end;
          declare
             A     : constant Fp := X_2 + Z_2;
-            AA    : constant Fp := A * A;
+            AA    : constant Fp := Square (A);
             B     : constant Fp := X_2 - Z_2;
-            BB    : constant Fp := B * B;
+            BB    : constant Fp := Square (B);
             E     : constant Fp := AA - BB;
             C     : constant Fp := X_3 + Z_3;
             D     : constant Fp := X_3 - Z_3;
             DA    : constant Fp := D * A;
             CB    : constant Fp := C * B;
-            DApCB : constant Fp := DA + CB;
-            DAmCB : constant Fp := DA - CB;
          begin
-            X_3 := DApCB * DApCB;
-            Z_3 := X_1 * DAmCB * DAmCB;
+            X_3 := Square (DA + CB);
+            Z_3 := X_1 * Square (DA - CB);
             X_2 := AA * BB;
             Z_2 := E * (AA + A24 * E);
          end;

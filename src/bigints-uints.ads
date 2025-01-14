@@ -80,6 +80,12 @@ is
    function Mul_Limb (A : Uint; B : U64) return Uint_Carry;
    --  Compute A * B, returning the result and the carry
 
+   function Square_Wide (A : Uint) return Wide_Uint;
+   --  Compute A * A, widening the result
+
+   function Square (A : Uint) return Uint;
+   --  Compute A * A, truncating the result
+
    function Div_Rem_Limb_With_Reciprocal
      (U : Uint; Re : Primitives.Recip) return Quotient_Rem;
    function Rem_Limb_With_Reciprocal

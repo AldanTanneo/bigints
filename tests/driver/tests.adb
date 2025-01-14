@@ -164,4 +164,17 @@ package body Tests is
         (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
          Test_Name, Line);
    end Assert_Eq;
+
+
+   procedure Assert_Eq
+     (Left, Right : Fp; Msg : String := "";
+      Test_Name   : String  := GNAT.Source_Info.Enclosing_Entity;
+      Line        : Natural := GNAT.Source_Info.Line)
+   is
+      Cond : constant Boolean := F25519."=" (Left, Right);
+   begin
+      Assert
+        (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
+         Test_Name, Line);
+   end Assert_Eq;
 end Tests;

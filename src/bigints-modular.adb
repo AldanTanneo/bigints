@@ -100,6 +100,12 @@ is
       return Fp (Montgomery_Reduction (W, P, MOD_NEG_INV));
    end "*";
 
+   overriding function Square (A : Fp) return Fp is
+      W : constant Wide_Uint := Square_Wide (A);
+   begin
+      return Fp (Montgomery_Reduction (W, P, MOD_NEG_INV));
+   end Square;
+
    function Pow (A : Fp; N : Uint) return Fp is
       use Const_Choice;
       Y : Fp := ONE;
