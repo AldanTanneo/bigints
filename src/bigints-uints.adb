@@ -428,6 +428,28 @@ is
       return Remainder;
    end "mod";
 
+   function Sqrt (A : Uint) return Uint is
+      use Const_Choice;
+
+      B      : constant Natural := BITS - Leading_Zeros (A);
+      X      : Uint             := Shl (ONE, (B + 1) / 2);
+      X_Prev : Uint             := X;
+
+      ITERS : constant Natural := 65 - Leading_Zeros (U64 (BITS));
+   begin
+      for I in 1 .. ITERS loop
+         X_Prev := X;
+         declare
+            X_Nonzero : constant Choice := Choice_From_Condition (X /= ZERO);
+            Q         : constant Uint   := A / Cond_Select (ONE, X, X_Nonzero);
+         begin
+            X := Cond_Select (ZERO, Shr1 (X + Q), X_Nonzero);
+         end;
+      end loop;
+
+      return Cond_Select (X_Prev, X, Choice_From_Condition (X_Prev > X));
+   end Sqrt;
+
    function Inv_Mod2k_Vartime (Value : Uint; K : Positive) return Uint is
       X : Uint := ZERO;
       B : Uint := ONE;

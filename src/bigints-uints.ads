@@ -146,6 +146,9 @@ is
      Pre => (for some I in 1 .. N => B (I) /= 0);
    --  Compute A % B for B != 0
 
+   function Sqrt (A : Uint) return Uint;
+   --  Constant time square root
+
    function Inv_Mod2k_Vartime (Value : Uint; K : Positive) return Uint with
      Pre => Value (1) mod 2 = 1 and then K <= BITS;
    --  Variable time relative to K
