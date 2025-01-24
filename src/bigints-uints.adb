@@ -141,7 +141,8 @@ is
    end "xor";
 
    function Add_Carry (A, B : Uint; Carry : U64) return Uint_Carry is
-      Res : Uint  := ZERO;
+      Res : Uint with
+        Relaxed_Initialization;
       Tmp : Tuple := (0, Carry);
       W   : U64 renames Tmp.Fst;
       C   : U64 renames Tmp.Snd;
