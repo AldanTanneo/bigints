@@ -141,14 +141,13 @@ is
    end "xor";
 
    function Add_Carry (A, B : Uint; Carry : U64) return Uint_Carry is
-      Res : Uint with
-        Relaxed_Initialization;
-      Tmp : Primitives.Tuple := (0, Carry);
+      Res : Uint  := ZERO;
+      Tmp : Tuple := (0, Carry);
       W   : U64 renames Tmp.Fst;
       C   : U64 renames Tmp.Snd;
    begin
       for I in 1 .. N loop
-         Tmp     := Primitives.Add_Carry (A (I), B (I), C);
+         Tmp     := Add_Carry (A (I), B (I), C);
          Res (I) := W;
          pragma Loop_Invariant (Res (1 .. I)'Initialized and then C in 0 .. 2);
       end loop;
@@ -163,7 +162,7 @@ is
    function Sub_Borrow (A, B : Uint; Borrow : U64) return Uint_Carry is
       Res : Uint with
         Relaxed_Initialization;
-      Tmp : Primitives.Tuple := (0, Borrow);
+      Tmp : Tuple := (0, Borrow);
       W   : U64 renames Tmp.Fst;
       C   : U64 renames Tmp.Snd;
    begin
@@ -184,7 +183,7 @@ is
    procedure Impl_Schoolbook_Multiplication
      (Value : out Wide_Uint; Lhs, Rhs : Uint)
    is
-      SumCarry : Primitives.Tuple;
+      SumCarry : Tuple;
       Sum      : U64 renames SumCarry.Fst;
       Carry    : U64 renames SumCarry.Snd;
       Xi       : U64;
