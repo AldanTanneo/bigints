@@ -115,7 +115,7 @@ is
       for I in 0 .. BITS - 1 loop
          C := Bit_Vartime (N, I);
          Y := Cond_Select (Y, X * Y, C);
-         X := X * X;
+         X := Square (X);
       end loop;
       return Y;
    end Pow;
@@ -128,7 +128,7 @@ is
          if Bit_Vartime (N, I) then
             Y := Y * X;
          end if;
-         X := X * X;
+         X := Square (X);
       end loop;
       return Y;
    end Pow_Vartime;
