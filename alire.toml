@@ -5,7 +5,7 @@ version = "0.1.0-dev"
 authors = ["Cesar SAGAERT"]
 maintainers = ["Cesar SAGAERT <sagaert@adacore.com>"]
 maintainers-logins = ["AldanTanneo"]
-licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
+licenses = "MIT"
 website = ""
 tags = []
 
@@ -15,7 +15,7 @@ development.optimization = ["-O3"]
 release.runtime_checks = "none"
 
 [[depends-on]]
-gnatprove = "^14.1.1"
+gnatprove = "^14.1"
 
 [[actions]]
 type = "test"
