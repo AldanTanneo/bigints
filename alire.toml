@@ -6,7 +6,7 @@ authors = ["Cesar SAGAERT"]
 maintainers = ["Cesar SAGAERT <sagaert@adacore.com>"]
 maintainers-logins = ["AldanTanneo"]
 licenses = "MIT"
-website = ""
+website = "https://github.com/AldanTanneo/bigints"
 tags = []
 
 [build-switches]
@@ -16,16 +16,3 @@ release.runtime_checks = "none"
 
 [[depends-on]]
 gnatprove = "^14.1"
-
-[[actions]]
-type = "test"
-command = ["alr", "build"]
-
-[[actions]]
-type = "test"
-command = ["alr", "gnatprove", "--warnings=error"]
-
-[[actions]]
-type = "test"
-command = ["./run.sh"]
-directory = "tests"
