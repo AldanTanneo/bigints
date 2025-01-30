@@ -1,6 +1,6 @@
 name = "bigints"
 description = ""
-version = "0.1.0-dev"
+version = "0.1.0"
 
 authors = ["Cesar SAGAERT"]
 maintainers = ["Cesar SAGAERT <sagaert@adacore.com>"]
@@ -13,6 +13,3 @@ tags = []
 "*".ada_version = "Ada2022"
 development.optimization = ["-O3"]
 release.runtime_checks = "none"
-
-[[depends-on]]
-gnatprove = "^14.1"
