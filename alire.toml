@@ -14,5 +14,5 @@ tags = []
 development.optimization = ["-O3"]
 release.runtime_checks = "none"
 
-[[depends-on]]
-gnatprove = "^14.1"
+[test]
+runner = 'alire'

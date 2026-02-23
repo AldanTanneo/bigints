@@ -15,18 +15,25 @@ on:
 
 jobs:
   gnatprove:
-    name: GNATProve
+    name: Run GNATProve
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: alire-project/setup-alire@v4
-      - run: alr build --validation
+      - uses: actions/checkout@v5
+      - uses: alire-project/setup-alire@v5
+        with:
+          version: "nightly"
+      - run: alr --color=always build --validation
       - run: alr gnatprove --warnings=error
       - run: cat ./obj/validation/gnatprove/gnatprove.out
   test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     name: Run tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: alire-project/setup-alire@v4
-      - run: cd tests && ./run.sh
+      - uses: alire-project/setup-alire@v5
+        with:
+          version: "nightly"
+      - run: alr --color=always test

@@ -94,12 +94,15 @@ private
    P_MINUS_TWO : constant Uint := P - Uints.From_U64 (2);
    ZERO        : constant Fp   := Fp (Uints.ZERO);
    ONE         : constant Fp   := Fp ((Uints.MAX mod P) + Uints.ONE);
+   pragma Warnings (Off, "value conversion implemented by copy");
    R2          : constant Uint :=
      Truncate
        (Wide_Uint
           (Uints_Wide."mod"
              (Uints_Wide.Uint (Mul_Wide (ONE, ONE)),
               Uints_Wide.Uint (Concat (P, Uints.ZERO)))));
+   pragma Warnings (On, "value conversion implemented by copy");
+
    INV_MOD     : constant Uint := Inv_Mod2k_Vartime (P, BITS);
    MOD_NEG_INV : constant U64  := -INV_MOD (1);
 

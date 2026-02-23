@@ -1,13 +1,6 @@
 name = "tests"
 description = ""
-version = "0.1.0-dev"
-
-authors = ["Cesar SAGAERT"]
-maintainers = ["Cesar SAGAERT <sagaert@adacore.com>"]
-maintainers-logins = ["AldanTanneo"]
-licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
-website = ""
-tags = []
+version = "0.0.0-test"
 
 executables = ["runner"]
 
@@ -15,7 +8,6 @@ executables = ["runner"]
 "*".ada_version = "Ada2022"
 
 [[depends-on]]
-aunit = "*"
 bigints = "*"
 
 [[pins]]
@@ -23,4 +15,5 @@ bigints = { path = '..' }
 
 [build-profiles]
 bigints = 'validation'
+tests = 'validation'
 
