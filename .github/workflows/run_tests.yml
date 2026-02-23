@@ -23,6 +23,7 @@ jobs:
         with:
           version: "nightly"
       - run: alr --color=always build --validation
+      - run: alr --color=always with gnatprove
       - run: alr gnatprove --warnings=error
       - run: cat ./obj/validation/gnatprove/gnatprove.out
   test:
