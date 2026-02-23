@@ -8,6 +8,8 @@ procedure Tests.Mul_Wide is
 
    X, Y : U256;
    Res  : Wide_Uint;
+
+   N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
    Res := Mul_Wide (A, B);
    Assert_Eq (Res, [others => 0], "0 * 1 != 0");
@@ -45,7 +47,7 @@ begin
       [1 => 1, 2 .. 4 => 0, 5 => U64'Last - 1, 6 .. 8 => U64'Last],
       "(2**256-1)**2 != 2**512 - 2**257 + 1");
 
-   for I in 1 .. 100000 loop
+   for I in 1 .. N loop
       X := Random_U256;
       Y := Random_U256;
       Res := Mul_Wide (X, Y);

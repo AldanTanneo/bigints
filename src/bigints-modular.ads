@@ -1,13 +1,13 @@
 with Bigints.Const_Choice;
 with Bigints.Uints;
 with Bigints.Uints.Modulo_Ops;
-with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
 generic
    with package Uints is new Bigints.Uints (<>);
    P : Uints.Uint;
 package Bigints.Modular with
-  SPARK_Mode => On, Initial_Condition => (P (1) mod 2 /= 0)
+    SPARK_Mode        => On,
+    Initial_Condition => (P (1) mod 2 /= 0)
 is
    MODULUS : constant Uints.Uint := P;
 
@@ -44,8 +44,9 @@ is
    function Square (A : Fp) return Fp;
    --  Squaring in GF(P)
 
-   overriding function "=" (A, B : Fp) return Boolean with
-     Inline;
+   overriding
+   function "=" (A, B : Fp) return Boolean
+   with Inline;
    --  Constant time equality check
 
    function Pow (A : Fp; N : Uints.Uint) return Fp;
@@ -57,23 +58,26 @@ is
    function Div_By_2 (A : Fp) return Fp;
    --  Division by 2 in GF(P)
 
-   function Inv (A : Fp) return Fp with
-     Pre => A /= ZERO;
+   function Inv (A : Fp) return Fp
+   with Pre => A /= ZERO;
    --  Constant time inversion in GF(P) (fermat method)
 
-   function Inv_Vartime (A : Fp) return Fp with
-     Pre => A /= ZERO;
+   function Inv_Vartime (A : Fp) return Fp
+   with Pre => A /= ZERO;
    --  Variable time (wrt Modulus) inversion in GF(P)
 
-   function Cond_Select (A, B : Fp; C : Const_Choice.Choice) return Fp with
+   function Cond_Select (A, B : Fp; C : Const_Choice.Choice) return Fp
+   with
      Post =>
-      (Cond_Select'Result = (if Const_Choice.To_Bool (C) then B else A));
+       (Cond_Select'Result = (if Const_Choice.To_Bool (C) then B else A));
    --  Constant time select
 
-   procedure CSwap (A, B : in out Fp; C : Const_Choice.Choice) with
+   procedure CSwap (A, B : in out Fp; C : Const_Choice.Choice)
+   with
      Post =>
-      (if Const_Choice.To_Bool (C) then (A = B'Old and then B = A'Old)
-       else (A = A'Old and then B = B'Old));
+       (if Const_Choice.To_Bool (C)
+        then (A = B'Old and then B = A'Old)
+        else (A = A'Old and then B = B'Old));
    --  Constant time swap
 
 private
@@ -86,14 +90,16 @@ private
    function Montgomery_Reduction
      (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint;
 
-   overriding function "=" (A, B : Fp) return Boolean is (Uint (A) = Uint (B));
+   overriding
+   function "=" (A, B : Fp) return Boolean
+   is (Uint (A) = Uint (B));
 
    package Uints_Modulo is new Uints.Modulo_Ops;
    package Uints_Wide is new Bigints.Uints (2 * BITS);
 
    P_MINUS_TWO : constant Uint := P - Uints.From_U64 (2);
-   ZERO        : constant Fp   := Fp (Uints.ZERO);
-   ONE         : constant Fp   := Fp ((Uints.MAX mod P) + Uints.ONE);
+   ZERO        : constant Fp := Fp (Uints.ZERO);
+   ONE         : constant Fp := Fp ((Uints.MAX mod P) + Uints.ONE);
    pragma Warnings (Off, "value conversion implemented by copy");
    R2          : constant Uint :=
      Truncate
@@ -104,7 +110,7 @@ private
    pragma Warnings (On, "value conversion implemented by copy");
 
    INV_MOD     : constant Uint := Inv_Mod2k_Vartime (P, BITS);
-   MOD_NEG_INV : constant U64  := -INV_MOD (1);
+   MOD_NEG_INV : constant U64 := -INV_MOD (1);
 
 end Bigints.Modular;
 

@@ -1,4 +1,5 @@
 [![Tests](https://github.com/AldanTanneo/bigints/actions/workflows/run_tests.yml/badge.svg)](https://github.com/AldanTanneo/bigints/actions/workflows/run_tests.yml)
+[![Alire Index](https://img.shields.io/endpoint?url=https://alire.ada.dev/badges/bigints.json)](https://alire.ada.dev/crates/bigints)
 
 # SPARK Constant Time Big Integer library
 
@@ -22,7 +23,7 @@ package GF_P is new Bigints.Modular (U256, P);
 
 All functions are implemented in constant time, except those with an explicit `_Vartime` suffix. Overloaded operators are also constant time.
 
-> ⚠️ The constant time choice primitives like `Choice_From_Condition`, `Cond_Select`, `CSwap` rely on best-effort optimisation barriers.
+> ⚠️ The constant time choice primitives like `Ct_Eq`, `Ct_Gt`, `Cond_Select`, `CSwap` rely on best-effort optimisation barriers.
 
 ## Tests
 
@@ -30,9 +31,8 @@ The library is formally checked using `gnatprove`. When contracts are respected,
 
 Some functional contracts try to go a bit further and prove more advanced behaviours (WIP).
 
-Tests are implemented in `./tests/src/`. Run them (UNIX only) with
+Tests are implemented in `./tests/src/`. Run them with the nightly version of Alire:
 
 ```sh
-cd tests
-./run.sh
+alr test
 ```

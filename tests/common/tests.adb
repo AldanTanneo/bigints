@@ -7,11 +7,27 @@ package body Tests is
 
    package Rng is new Ada.Numerics.Discrete_Random (U64);
 
+   G : Rng.Generator;
+   Init : Boolean := False;
+
+   procedure Init_Rng is
+   begin
+      if not Init then
+         Init := True;
+         Rng.Reset (G);
+      end if;
+   end Init_Rng;
+
+   function Random_U64 return U64 is
+   begin
+      Init_Rng;
+      return Rng.Random (G);
+   end Random_U64;
+
    function Random_U256 return U256 is
-      G   : Rng.Generator;
       Res : U256;
    begin
-      Rng.Reset (G);
+      Init_Rng;
       for I in Res'Range loop
          Res (I) := Rng.Random (G);
       end loop;
@@ -125,6 +141,18 @@ package body Tests is
          raise Ada.Assertions.Assertion_Error with "Assertion failed: " & Msg;
       end if;
    end Assert;
+
+   procedure Assert_Ct
+     (Condition : Const_Choice.Choice;
+      Msg       : String := "";
+      Test_Name : String := GNAT.Source_Info.Enclosing_Entity;
+      Line      : Natural := GNAT.Source_Info.Line) is
+   begin
+      if U64'(Const_Choice.Lsb (Condition)) /= 1 then
+         Put_Line ("In `" & Test_Name & "`, line" & Line'Image);
+         raise Ada.Assertions.Assertion_Error with "Assertion failed: " & Msg;
+      end if;
+   end Assert_Ct;
 
    procedure Assert_Eq
      (Left, Right : U64;

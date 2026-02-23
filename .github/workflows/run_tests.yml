@@ -24,7 +24,7 @@ jobs:
           version: "nightly"
       - run: alr --color=always build --validation
       - run: alr --color=always with gnatprove
-      - run: alr gnatprove --warnings=error
+      - run: alr gnatprove --warnings=error --level=4
       - run: cat ./obj/validation/gnatprove/gnatprove.out
   test:
     strategy:
@@ -38,3 +38,5 @@ jobs:
         with:
           version: "nightly"
       - run: alr --color=always test
+        env:
+          TEST_IS_GITHUB_CI: 1

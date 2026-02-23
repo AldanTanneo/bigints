@@ -1,8 +1,10 @@
 procedure Tests.Mul_Limb is
    A, B     : U256;
    ResCarry : U256s.Uint_Carry;
+
+   N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
-   for I in 1 .. 100000 loop
+   for I in 1 .. N loop
       A := Random_U256;
       B := Random_U256;
       B (2 .. 4) := [others => 0];

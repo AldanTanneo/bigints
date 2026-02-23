@@ -2,6 +2,8 @@ procedure Tests.Div_Rem is
    use U256s;
 
    A, B, Q, R : Uint;
+
+   N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
    A :=
      From_Hex
@@ -12,7 +14,7 @@ begin
      (Q, From_Hex ("1a21f2b3ce5eb79df1043754cb5aa5d4cb5af4e679eb19963"));
    Assert_Eq (R, From_Hex ("14be0964f5e1c55"));
 
-   for I in 1 .. 100000 loop
+   for I in 1 .. N loop
       A := Random_U256;
       B := Random_U256;
       B ((I mod 4) + 2 .. 4) := [others => 0];

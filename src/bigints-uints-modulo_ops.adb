@@ -1,7 +1,7 @@
-with Bigints.Primitives; use Bigints.Primitives;
+with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
-package body Bigints.Uints.Modulo_Ops with
-  SPARK_Mode => On
+package body Bigints.Uints.Modulo_Ops
+  with SPARK_Mode => On
 is
 
    function Add_Mod (A, B, P : Uint) return Uint is
@@ -26,11 +26,7 @@ is
       return OutMask.Res + (P and OutMask.Carry);
    end Sub_Mod;
 
-   function Neg_Mod (A, P : Uint) return Uint is
-      Mask : constant Const_Choice.Choice :=
-        Const_Choice.Choice_From_Condition (A = ZERO);
-   begin
-      return Cond_Select (P - A, A, Mask);
-   end Neg_Mod;
+   function Neg_Mod (A, P : Uint) return Uint
+   is (Cond_Select (P - A, ZERO, A = ZERO));
 
 end Bigints.Uints.Modulo_Ops;

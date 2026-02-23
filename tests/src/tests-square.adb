@@ -10,6 +10,8 @@ procedure Tests.Square is
    Res : Wide_Uint;
 
    X : U256;
+
+   N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
    Assert_Eq (Square (A), A2);
 
@@ -17,7 +19,7 @@ begin
    Assert_Eq (Truncate (Res), ONE);
    Assert_Eq (Truncate_Upper (Res), B2);
 
-   for I in 1 .. 100000 loop
+   for I in 1 .. N loop
       X := Random_U256;
       Assert (Square_Wide (X) = Mul_Wide (X, X));
    end loop;

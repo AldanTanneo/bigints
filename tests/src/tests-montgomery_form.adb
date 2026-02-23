@@ -4,10 +4,12 @@ procedure Tests.Montgomery_Form is
 
    A : U256;
    B : Fp;
+
+   N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
    Assert_Eq (F25519.Retrieve (F25519.ONE), ONE);
 
-   for I in 1 .. 100000 loop
+   for I in 1 .. N loop
       A := Random_U256;
       B := F25519.Create (A);
 
