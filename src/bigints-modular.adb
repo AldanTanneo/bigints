@@ -6,33 +6,27 @@ is
 
    function Create (U : Uint) return Fp is
       Prod            : constant Wide_Uint := Uints.Mul_Wide (U, R2);
-      Montgomery_Form : constant Uint :=
-        Montgomery_Reduction (Prod, P, MOD_NEG_INV);
+      Montgomery_Form : constant Uint := Montgomery_Reduction (Prod, P, MOD_NEG_INV);
    begin
       return Fp (Montgomery_Form);
    end Create;
 
    function Create (U : U64) return Fp is
       Prod            : constant Uint_Carry := Uints.Mul_Limb (R2, U);
-      Prod_Wide       : constant Wide_Uint :=
-        Concat (Prod.Res, [Prod.Carry, others => 0]);
-      Montgomery_Form : constant Uint :=
-        Montgomery_Reduction (Prod_Wide, P, MOD_NEG_INV);
+      Prod_Wide       : constant Wide_Uint := Concat (Prod.Res, [Prod.Carry, others => 0]);
+      Montgomery_Form : constant Uint := Montgomery_Reduction (Prod_Wide, P, MOD_NEG_INV);
    begin
       return Fp (Montgomery_Form);
    end Create;
 
    function Retrieve (F : Fp) return Uint is
       Extended : constant Wide_Uint := Concat (F, ZERO);
-      Reduced  : constant Uint :=
-        Montgomery_Reduction (Extended, P, MOD_NEG_INV);
+      Reduced  : constant Uint := Montgomery_Reduction (Extended, P, MOD_NEG_INV);
    begin
       return Reduced;
    end Retrieve;
 
-   function Sub_Mod_With_Carry
-     (Lhs : Uint; Carry : U64; Rhs, P : Uint) return Uint
-   is
+   function Sub_Mod_With_Carry (Lhs : Uint; Carry : U64; Rhs, P : Uint) return Uint is
       OutBorrow : constant Uint_Carry := Sub_Borrow (Lhs, Rhs, 0);
       Mask      : constant U64 := (not (-Carry)) and OutBorrow.Carry;
    begin
@@ -40,10 +34,7 @@ is
    end Sub_Mod_With_Carry;
 
    procedure Impl_Montgomery_Reduction
-     (Value       : in out Wide_Uint;
-      MCarry      : out U64;
-      Modulus     : Uint;
-      Mod_Neg_Inv : U64)
+     (Value : in out Wide_Uint; MCarry : out U64; Modulus : Uint; Mod_Neg_Inv : U64)
    is
       SumCarry   : Tuple := (0, 0);
       New_Sum    : U64 renames SumCarry.Fst;
@@ -71,8 +62,7 @@ is
       MCarry := Meta_Carry;
    end Impl_Montgomery_Reduction;
 
-   function Montgomery_Reduction
-     (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint
+   function Montgomery_Reduction (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint
    is
       V : Wide_Uint := Value;
       M : U64;

@@ -5,10 +5,7 @@ with Bigints.Uints.Modulo_Ops;
 generic
    with package Uints is new Bigints.Uints (<>);
    P : Uints.Uint;
-package Bigints.Modular with
-    SPARK_Mode        => On,
-    Initial_Condition => (P (1) mod 2 /= 0)
-is
+package Bigints.Modular with SPARK_Mode => On, Initial_Condition => (P (1) mod 2 /= 0) is
    MODULUS : constant Uints.Uint := P;
 
    type Fp is private;
@@ -67,9 +64,7 @@ is
    --  Variable time (wrt Modulus) inversion in GF(P)
 
    function Cond_Select (A, B : Fp; C : Const_Choice.Choice) return Fp
-   with
-     Post =>
-       (Cond_Select'Result = (if Const_Choice.To_Bool (C) then B else A));
+   with Post => (Cond_Select'Result = (if Const_Choice.To_Bool (C) then B else A));
    --  Constant time select
 
    procedure CSwap (A, B : in out Fp; C : Const_Choice.Choice)
@@ -84,11 +79,9 @@ private
    use Uints;
    type Fp is new Uints.Uint;
 
-   function Sub_Mod_With_Carry
-     (Lhs : Uint; Carry : U64; Rhs, P : Uint) return Uint;
+   function Sub_Mod_With_Carry (Lhs : Uint; Carry : U64; Rhs, P : Uint) return Uint;
 
-   function Montgomery_Reduction
-     (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint;
+   function Montgomery_Reduction (Value : Wide_Uint; Modulus : Uint; Mod_Neg_Inv : U64) return Uint;
 
    overriding
    function "=" (A, B : Fp) return Boolean
@@ -105,8 +98,7 @@ private
      Truncate
        (Wide_Uint
           (Uints_Wide."mod"
-             (Uints_Wide.Uint (Mul_Wide (ONE, ONE)),
-              Uints_Wide.Uint (Concat (P, Uints.ZERO)))));
+             (Uints_Wide.Uint (Mul_Wide (ONE, ONE)), Uints_Wide.Uint (Concat (P, Uints.ZERO)))));
    pragma Warnings (On, "value conversion implemented by copy");
 
    INV_MOD     : constant Uint := Inv_Mod2k_Vartime (P, BITS);

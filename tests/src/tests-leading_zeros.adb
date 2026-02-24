@@ -21,6 +21,6 @@ begin
    N := [0, 0, 0, 1];
    Assert (U256s.Leading_Zeros (N) = 63, "clz(2**192) != 63");
 
-   N := [0, 0, 0, 2**63];
+   N := [0, 0, 0, 2 ** 63];
    Assert (U256s.Leading_Zeros (N) = 0, "clz(2**255) != 0");
 end Tests.Leading_Zeros;

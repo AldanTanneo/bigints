@@ -52,9 +52,7 @@ private
       Shift          : Natural := 0;
       Reciprocal     : U64 := 1;
    end record
-   with
-     Type_Invariant =>
-       Recip.Div_Normalized >= 2 ** 63 and then Recip.Shift < 64;
+   with Type_Invariant => Recip.Div_Normalized >= 2 ** 63 and then Recip.Shift < 64;
 
    function Get_Shift (R : Recip) return Natural
    is (R.Shift);

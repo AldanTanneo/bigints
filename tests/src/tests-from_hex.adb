@@ -7,6 +7,5 @@ begin
 
    Assert_Eq (U256s.From_Hex (B), [0, 16#1000000000000000#, 0, 0]);
 
-   Assert_Eq
-     (U256s.From_Hex (C), [16#8899aabbccddeeff#, 16#0011223344556677#, 0, 0]);
+   Assert_Eq (U256s.From_Hex (C), [16#8899aabbccddeeff#, 16#0011223344556677#, 0, 0]);
 end Tests.From_Hex;

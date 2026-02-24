@@ -6,8 +6,8 @@ procedure Tests.Mul_Mod is
    N : constant Natural := (if Test_Is_Github_CI then 10 ** 6 else 10 ** 5);
 begin
    for I in 1 .. N loop
-      X   := Create (Random_U256);
-      Y   := Create (Random_U256);
+      X := Create (Random_U256);
+      Y := Create (Random_U256);
       Res := X * Y;
 
       declare

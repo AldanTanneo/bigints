@@ -1,4 +1,5 @@
 with Bigints.F25519;
+
 procedure Tests.Montgomery_Form is
    use U256s;
 
@@ -13,7 +14,6 @@ begin
       A := Random_U256;
       B := F25519.Create (A);
 
-      Assert_Eq
-        (A mod F25519.MODULUS, F25519.Retrieve (B), "invalid montgomery form");
+      Assert_Eq (A mod F25519.MODULUS, F25519.Retrieve (B), "invalid montgomery form");
    end loop;
 end Tests.Montgomery_Form;

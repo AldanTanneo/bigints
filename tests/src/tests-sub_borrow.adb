@@ -27,6 +27,5 @@ begin
    Assert_Eq (Borrow, U64'Last, "Borrow != -1");
 
    Tuple := Sub_Borrow (C, D, 0);
-   Assert_Eq
-     (Res, [3 .. 4 => U64'Last, others => 0], "Res != 2**256 - 2**128");
+   Assert_Eq (Res, [3 .. 4 => U64'Last, others => 0], "Res != 2**256 - 2**128");
 end Tests.Sub_Borrow;

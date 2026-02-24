@@ -29,12 +29,7 @@ is
    is (U128 (U64 (C) and 1));
 
    procedure Value_Barrier (V : in out U64)
-   with
-     SPARK_Mode => On,
-     Global     => null,
-     Always_Terminates,
-     Post       => V'Old = V,
-     Inline_Always;
+   with SPARK_Mode => On, Global => null, Always_Terminates, Post => V'Old = V, Inline_Always;
 
    procedure Value_Barrier (V : in out U64) with SPARK_Mode => Off is
       --  This function is a best-effort attempt to prevent the compiler from
@@ -45,8 +40,7 @@ is
       --  can never be removed by the optimizer, and the optimizer cannot see
       --  inside an assembly block.
    begin
-      System.Machine_Code.Asm
-        ("", Volatile => True, Outputs => U64'Asm_Output ("+r", V));
+      System.Machine_Code.Asm ("", Volatile => True, Outputs => U64'Asm_Output ("+r", V));
    end Value_Barrier;
 
    function Choice_From_Bit (Bit : U64) return Choice is
@@ -96,8 +90,7 @@ is
    function Ct_Gt (A, B : U128) return Choice is
    begin
       return
-        Ct_Gt (High (A), High (B))
-        or (Ct_Eq (High (A), High (B)) and Ct_Gt (Low (A), Low (B)));
+        Ct_Gt (High (A), High (B)) or (Ct_Eq (High (A), High (B)) and Ct_Gt (Low (A), Low (B)));
    end Ct_Gt;
 
    function Cond_Select (A, B : U32; C : Choice) return U32 is

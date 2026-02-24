@@ -4,16 +4,17 @@ pragma Warnings (GNAT, Off, "use clause for package * has no effect");
 pragma Warnings (GNAT, Off, "*useless assignment to *, value *");
 
 with Ada.Environment_Variables;
+with Ada.Numerics.Big_Numbers.Big_Integers; use Ada.Numerics.Big_Numbers.Big_Integers;
 with GNAT.Source_Info;
-with Bigints.Primitives;                    use Bigints.Primitives;
-with Bigints.Machine_Ints;                  use Bigints.Machine_Ints;
+
+with Bigints.Primitives;   use Bigints.Primitives;
+with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 with Bigints.U256s;
 with Bigints.U256_Modulo;
 with Bigints.Const_Choice;
 with Bigints.F25519;
 use Bigints;
-with Ada.Numerics.Big_Numbers.Big_Integers;
-use Ada.Numerics.Big_Numbers.Big_Integers;
+
 
 package Tests is
    subtype U256 is U256s.Uint;

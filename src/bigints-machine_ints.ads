@@ -15,10 +15,7 @@ is
         Pre    => Value > 0, --  __builtin_clz is undefined for 0
         Post   =>
           Leading_Zeros_32'Result < 32
-          and then
-            (Value * 2 ** Leading_Zeros_32'Result)
-            / 2 ** Leading_Zeros_32'Result
-            = Value
+          and then (Value * 2 ** Leading_Zeros_32'Result) / 2 ** Leading_Zeros_32'Result = Value
           and then Value * 2 ** (Leading_Zeros_32'Result) >= 2 ** 31,
         Global => null,
         Inline;
@@ -29,10 +26,7 @@ is
         Pre    => Value > 0, --  __builtin_clzll is undefined for 0
         Post   =>
           Leading_Zeros_64'Result < 64
-          and then
-            (Value * 2 ** Leading_Zeros_64'Result)
-            / 2 ** Leading_Zeros_64'Result
-            = Value
+          and then (Value * 2 ** Leading_Zeros_64'Result) / 2 ** Leading_Zeros_64'Result = Value
           and then Value * 2 ** (Leading_Zeros_64'Result) >= 2 ** 63,
         Global => null,
         Inline;
@@ -43,10 +37,7 @@ is
         Pre    => Value > 0, --  __builtin_ctz is undefined for 0
         Post   =>
           Trailing_Zeros_32'Result < 32
-          and then
-            (Value / 2 ** Trailing_Zeros_32'Result)
-            * 2 ** Trailing_Zeros_32'Result
-            = Value
+          and then (Value / 2 ** Trailing_Zeros_32'Result) * 2 ** Trailing_Zeros_32'Result = Value
           and then Value / 2 ** (Trailing_Zeros_32'Result) mod 2 = 1,
         Global => null,
         Inline;
@@ -57,10 +48,7 @@ is
         Pre    => Value > 0, --  __builtin_ctzll is undefined for 0
         Post   =>
           Trailing_Zeros_64'Result < 64
-          and then
-            (Value / 2 ** Trailing_Zeros_64'Result)
-            * 2 ** Trailing_Zeros_64'Result
-            = Value
+          and then (Value / 2 ** Trailing_Zeros_64'Result) * 2 ** Trailing_Zeros_64'Result = Value
           and then Value / 2 ** (Trailing_Zeros_64'Result) mod 2 = 1,
         Global => null,
         Inline;
@@ -73,9 +61,7 @@ is
      Pre  => Value > 0,
      Post =>
        Leading_Zeros'Result < 32
-       and then
-         (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result
-         = Value
+       and then (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result = Value
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 31,
      Inline_Always;
 
@@ -85,9 +71,7 @@ is
      Pre  => Value > 0,
      Post =>
        Trailing_Zeros'Result < 32
-       and then
-         (Value / 2 ** Trailing_Zeros'Result) * 2 ** Trailing_Zeros'Result
-         = Value
+       and then (Value / 2 ** Trailing_Zeros'Result) * 2 ** Trailing_Zeros'Result = Value
        and then Value / 2 ** (Trailing_Zeros'Result) mod 2 = 1,
      Inline_Always;
 
@@ -117,9 +101,7 @@ is
      Pre  => Value > 0,
      Post =>
        Leading_Zeros'Result < 64
-       and then
-         (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result
-         = Value
+       and then (Value * 2 ** Leading_Zeros'Result) / 2 ** Leading_Zeros'Result = Value
        and then Value * 2 ** (Leading_Zeros'Result) >= 2 ** 63,
      Inline_Always;
 
@@ -129,9 +111,7 @@ is
      Pre  => Value > 0,
      Post =>
        Trailing_Zeros'Result < 64
-       and then
-         (Value / 2 ** Trailing_Zeros'Result) * 2 ** Trailing_Zeros'Result
-         = Value
+       and then (Value / 2 ** Trailing_Zeros'Result) * 2 ** Trailing_Zeros'Result = Value
        and then Value / 2 ** (Trailing_Zeros'Result) mod 2 = 1,
      Inline_Always;
 
@@ -200,8 +180,7 @@ is
      Inline_Always,
      Post =>
        Add_Carry'Result.Snd in 0 .. 2
-       and then
-         X + Y + Carry = Add_Carry'Result.Fst + 2 ** 64 * Add_Carry'Result.Snd;
+       and then X + Y + Carry = Add_Carry'Result.Fst + 2 ** 64 * Add_Carry'Result.Snd;
    --  Computes `X + Y + Carry`, returning the result along with the new carry
    --  (0, 1, or 2).
 
@@ -216,11 +195,8 @@ is
      Post =>
        (Sub_Borrow'Result.Fst = X - (Y + Borrow / 2 ** 63)
         and then
-          (Sub_Borrow'Result.Snd = U64'Last)
-          = (U128 (X) < U128 (Y) + U128 (Borrow) / 2 ** 63)
-        and then
-          (Sub_Borrow'Result.Snd = 0
-           or else Sub_Borrow'Result.Snd = U64'Last));
+          (Sub_Borrow'Result.Snd = U64'Last) = (U128 (X) < U128 (Y) + U128 (Borrow) / 2 ** 63)
+        and then (Sub_Borrow'Result.Snd = 0 or else Sub_Borrow'Result.Snd = U64'Last));
    --  Computes `X - (Y + Borrow)`, returning the result along with the new
    --  borrow.
 
@@ -232,9 +208,6 @@ is
    function Saturating_Sub (A, B : U64) return U64
    with
      Inline_Always,
-     Post =>
-       (if A >= B
-        then Saturating_Sub'Result = A - B
-        else Saturating_Sub'Result = 0);
+     Post => (if A >= B then Saturating_Sub'Result = A - B else Saturating_Sub'Result = 0);
 
 end Bigints.Machine_Ints;

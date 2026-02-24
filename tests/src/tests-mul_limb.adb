@@ -18,10 +18,7 @@ begin
          Rb : constant Big_Natural := Mb mod (2 ** 256);
          Cb : constant Big_Natural := Mb / (2 ** 256);
       begin
-         Assert
-           (Mb
-            = To_Big_Number (ResCarry.Res)
-              + (2 ** 256) * To_Big_Number (ResCarry.Carry));
+         Assert (Mb = To_Big_Number (ResCarry.Res) + (2 ** 256) * To_Big_Number (ResCarry.Carry));
 
          Assert_Eq (ResCarry.Res, To_Uint (Rb), "invalid result");
          Assert_Eq (ResCarry.Carry, To_U64 (Cb), "invalid carry");

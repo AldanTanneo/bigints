@@ -15,8 +15,7 @@ begin
    Assert_Eq (Res, [others => 0], "0 * 1 != 0");
 
    Res := Mul_Wide (B, C);
-   Assert_Eq
-     (Res, [1 .. 4 => U64'Last, others => 0], "1 * (2**256-1) != 2**256-1");
+   Assert_Eq (Res, [1 .. 4 => U64'Last, others => 0], "1 * (2**256-1) != 2**256-1");
 
    Res := Mul_Wide (B + B, C);
    Assert_Eq
@@ -27,12 +26,7 @@ begin
    Res := Mul_Wide (C, D);
    Assert_Eq
      (Res,
-      [1      => 1,
-       2      => 0,
-       3 .. 4 => U64'Last,
-       5      => U64'Last - 1,
-       6      => U64'Last,
-       7 .. 8 => 0],
+      [1 => 1, 2 => 0, 3 .. 4 => U64'Last, 5 => U64'Last - 1, 6 => U64'Last, 7 .. 8 => 0],
       "(2**128-1) * (2**256-1) != 2**384 - 2**256 - 2**128 - 1");
 
    Res := Mul_Wide (D, D);

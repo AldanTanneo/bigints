@@ -8,8 +8,8 @@ procedure Tests.Modular is
 
    use GF7;
 
-   X  : constant Fp   := Create (3);
-   Y  : constant Fp   := Create (4);
+   X : constant Fp := Create (3);
+   Y : constant Fp := Create (4);
 
    IX : constant Fp := Inv (X);
 begin

@@ -9,6 +9,10 @@ project Tests is
    for Exec_Dir use "bin";
    for Main use Tests_List_Config.Test_Files;
 
+   package Format is
+      for Width ("Ada") use "100";
+   end Format;
+
    package Compiler is
       for Default_Switches ("Ada") use Tests_Config.Ada_Compiler_Switches;
    end Compiler;

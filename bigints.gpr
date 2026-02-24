@@ -14,6 +14,10 @@ project Bigints is
      external ("BIGINTS_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
+   package Format is
+      for Width ("Ada") use "100";
+   end Format;
+
    package Compiler is
       for Default_Switches ("Ada") use Bigints_Config.Ada_Compiler_Switches & ("-gnato13");
    end Compiler;

@@ -25,8 +25,7 @@ package body Tests is
       return Cast (Res);
    end Random_U256;
 
-   package Conversions is new
-     Ada.Numerics.Big_Numbers.Big_Integers.Unsigned_Conversions (U64);
+   package Conversions is new Ada.Numerics.Big_Numbers.Big_Integers.Unsigned_Conversions (U64);
 
    function To_Big_Number (A : U256) return Big_Natural is
       Res : Big_Natural := 0;
@@ -154,10 +153,7 @@ package body Tests is
       Cond : constant Boolean := Left = Right;
    begin
       Assert
-        (Cond,
-         Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
-         Test_Name,
-         Line);
+        (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image, Test_Name, Line);
    end Assert_Eq;
 
    procedure Assert_Eq
@@ -169,10 +165,7 @@ package body Tests is
       Cond : constant Boolean := U256s."=" (Left, Right);
    begin
       Assert
-        (Cond,
-         Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
-         Test_Name,
-         Line);
+        (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image, Test_Name, Line);
    end Assert_Eq;
 
    procedure Assert_Eq
@@ -181,14 +174,10 @@ package body Tests is
       Test_Name   : String := GNAT.Source_Info.Enclosing_Entity;
       Line        : Natural := GNAT.Source_Info.Line)
    is
-      Cond : constant Boolean :=
-        (for all I in U256s.Wide_Uint'Range => Left (I) = Right (I));
+      Cond : constant Boolean := (for all I in U256s.Wide_Uint'Range => Left (I) = Right (I));
    begin
       Assert
-        (Cond,
-         Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
-         Test_Name,
-         Line);
+        (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image, Test_Name, Line);
    end Assert_Eq;
 
    procedure Assert_Eq
@@ -200,9 +189,6 @@ package body Tests is
       Cond : constant Boolean := F25519."=" (Left, Right);
    begin
       Assert
-        (Cond,
-         Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image,
-         Test_Name,
-         Line);
+        (Cond, Msg & LF & "Left =" & Left'Image & LF & "Right =" & Right'Image, Test_Name, Line);
    end Assert_Eq;
 end Tests;

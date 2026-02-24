@@ -1,4 +1,4 @@
-with Bigints.Primitives; use Bigints.Primitives;
+with Bigints.Primitives;   use Bigints.Primitives;
 with Bigints.Machine_Ints; use Bigints.Machine_Ints;
 
 package body Bigints.Uints
@@ -26,8 +26,7 @@ is
             when others     =>
                V := 0;
          end case;
-         Res (I / 16 + 1) :=
-           Res (I / 16 + 1) or Shift_Left (V, 4 * (I mod 16));
+         Res (I / 16 + 1) := Res (I / 16 + 1) or Shift_Left (V, 4 * (I mod 16));
          I := I + Boolean'Pos (Value (C) /= '_');
       end loop;
       return Res;
@@ -97,8 +96,7 @@ is
       for I in 1 .. N loop
          Res (I) := A (I) and B (I);
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma
-           Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) and B (J)));
+         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) and B (J)));
       end loop;
       return Res;
    end "and";
@@ -110,8 +108,7 @@ is
       for I in 1 .. N loop
          Res (I) := A (I) and B;
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma
-           Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) and B));
+         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) and B));
       end loop;
       return Res;
    end "and";
@@ -123,8 +120,7 @@ is
       for I in 1 .. N loop
          Res (I) := A (I) or B (I);
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma
-           Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) or B (J)));
+         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) or B (J)));
       end loop;
       return Res;
    end "or";
@@ -136,8 +132,7 @@ is
       for I in 1 .. N loop
          Res (I) := A (I) xor B (I);
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
-         pragma
-           Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) xor B (J)));
+         pragma Loop_Invariant (for all J in 1 .. I => Res (J) = (A (J) xor B (J)));
       end loop;
       return Res;
    end "xor";
@@ -172,9 +167,7 @@ is
       for I in 1 .. N loop
          Tmp := Sub_Borrow (A (I), B (I), C);
          Res (I) := W;
-         pragma
-           Loop_Invariant
-             (Res (1 .. I)'Initialized and then (C = 0 or else C = U64'Last));
+         pragma Loop_Invariant (Res (1 .. I)'Initialized and then (C = 0 or else C = U64'Last));
       end loop;
       return (Res, C);
    end Sub_Borrow;
@@ -184,9 +177,7 @@ is
       return Sub_Borrow (A, B, 0).Res;
    end "-";
 
-   procedure Impl_Schoolbook_Multiplication
-     (Value : out Wide_Uint; Lhs, Rhs : Uint)
-   is
+   procedure Impl_Schoolbook_Multiplication (Value : out Wide_Uint; Lhs, Rhs : Uint) is
       SumCarry : Tuple;
       Sum      : U64 renames SumCarry.Fst;
       Carry    : U64 renames SumCarry.Snd;
@@ -279,9 +270,7 @@ is
    function Square (A : Uint) return Uint
    is (Truncate (Square_Wide (A)));
 
-   function Div_Rem_Limb_With_Reciprocal
-     (U : Uint; Re : Recip) return Quotient_Rem
-   is
+   function Div_Rem_Limb_With_Reciprocal (U : Uint; Re : Recip) return Quotient_Rem is
       UShiftHi : constant Uint_Carry := Shl_Limb (U, Get_Shift (Re));
       R        : U64 := UShiftHi.Carry;
       Q        : Uint
@@ -309,9 +298,7 @@ is
       return Shift_Right (R, Get_Shift (Re));
    end Rem_Limb_With_Reciprocal;
 
-   function Rem_Limb_With_Reciprocal_Wide
-     (Lo, Hi : Uint; Re : Recip) return U64
-   is
+   function Rem_Limb_With_Reciprocal_Wide (Lo, Hi : Uint; Re : Recip) return U64 is
       LoShiftCarry : constant Uint_Carry := Shl_Limb (Lo, Get_Shift (Re));
       HiShiftXhi   : Uint_Carry := Shl_Limb (Hi, Get_Shift (Re));
       Hi_Shifted   : Uint renames HiShiftXhi.Res;
@@ -363,8 +350,7 @@ is
          declare
             Done          : constant Choice := Ct_Lt (U64 (Xi), U64 (Dwords));
             Ct_Borrow     : Choice;
-            Q             : constant U64 :=
-              Div3By2 (X_Hi, X_Lo, X (Xi - 1), Re, Y (N - 1));
+            Q             : constant U64 := Div3By2 (X_Hi, X_Lo, X (Xi - 1), Re, Y (N - 1));
             Quo           : U64 := Cond_Select (Q, 0, Done);
             Carry, Borrow : U64 := 0;
             Tmp           : Tuple;
@@ -384,9 +370,7 @@ is
             Ct_Borrow := Choice_From_Mask (Borrow);
             Carry := 0;
             for I in 1 .. Xi loop
-               Tmp :=
-                 Add_Carry
-                   (X (I), Cond_Select (0, Y (N - Xi + I), Ct_Borrow), Carry);
+               Tmp := Add_Carry (X (I), Cond_Select (0, Y (N - Xi + I), Ct_Borrow), Carry);
                X (I) := Tmp.Fst;
                Carry := Tmp.Snd;
             end loop;
@@ -476,15 +460,11 @@ is
       return Boolean'Val (Shift_Right (Value (Limb + 1), Bit) and 1);
    end Bit_Vartime;
 
-   function Bit_Vartime
-     (Value : Uint; Amount : Natural) return Const_Choice.Choice
-   is
+   function Bit_Vartime (Value : Uint; Amount : Natural) return Const_Choice.Choice is
       Limb : constant Natural := Amount / 64;
       Bit  : constant Natural := Amount mod 64;
    begin
-      return
-        Const_Choice.Choice_From_Bit
-          (Shift_Right (Value (Limb + 1), Bit) and 1);
+      return Const_Choice.Choice_From_Bit (Shift_Right (Value (Limb + 1), Bit) and 1);
    end Bit_Vartime;
 
    overriding
@@ -493,8 +473,7 @@ is
    begin
       for I in 1 .. N loop
          Res := Res or (A (I) xor B (I));
-         pragma
-           Loop_Invariant ((Res = 0) = (for all J in 1 .. I => A (J) = B (J)));
+         pragma Loop_Invariant ((Res = 0) = (for all J in 1 .. I => A (J) = B (J)));
       end loop;
       return Res = 0;
    end "=";
@@ -511,8 +490,7 @@ is
    begin
       for I in 1 .. N loop
          Res := Res or (A (I) xor B (I));
-         pragma
-           Loop_Invariant ((Res = 0) = (for all J in 1 .. I => A (J) = B (J)));
+         pragma Loop_Invariant ((Res = 0) = (for all J in 1 .. I => A (J) = B (J)));
       end loop;
       return Const_Choice.Ct_Eq (Res, 0);
    end "=";
@@ -541,11 +519,8 @@ is
            Loop_Invariant
              (for all J in 1 .. I =>
                 (if To_Bool (C)
-                 then
-                   A (J) = B'Loop_Entry (J) and then B (J) = A'Loop_Entry (J)
-                 else
-                   A (J) = A'Loop_Entry (J)
-                   and then B (J) = B'Loop_Entry (J)));
+                 then A (J) = B'Loop_Entry (J) and then B (J) = A'Loop_Entry (J)
+                 else A (J) = A'Loop_Entry (J) and then B (J) = B'Loop_Entry (J)));
       end loop;
    end CSwap;
 
@@ -560,8 +535,7 @@ is
          pragma Loop_Invariant (Res (1 .. I)'Initialized);
          pragma
            Loop_Invariant
-             (for all J in 1 .. I =>
-                (if To_Bool (C) then Res (J) = B (J) else Res (J) = A (J)));
+             (for all J in 1 .. I => (if To_Bool (C) then Res (J) = B (J) else Res (J) = A (J)));
       end loop;
       return Res;
    end Cond_Select;
@@ -635,8 +609,7 @@ is
       for I in 1 .. N loop
          Res (I) := Shift_Left (Value (I), 1) or Carry;
          Carry := Shift_Right (Value (I), 63);
-         pragma
-           Loop_Invariant (Res (1 .. I)'Initialized and then Carry in 0 .. 1);
+         pragma Loop_Invariant (Res (1 .. I)'Initialized and then Carry in 0 .. 1);
       end loop;
       return (Res, Carry);
    end Shl1;
@@ -711,8 +684,7 @@ is
       for I in reverse 1 .. N loop
          Res (I) := Shift_Right (Value (I), 1) or Shift_Left (Carry, 63);
          Carry := Value (I) and 1;
-         pragma
-           Loop_Invariant (Res (I .. N)'Initialized and then Carry in 0 .. 1);
+         pragma Loop_Invariant (Res (I .. N)'Initialized and then Carry in 0 .. 1);
       end loop;
       return (Res, Carry);
    end Shr1;
@@ -733,14 +705,11 @@ is
          pragma
            Loop_Invariant
              (if To_Bool (Non_Zero_Not_Encountered)
-              then
-                (for all J in I + 1 .. N => Value (J) = 0)
-                and then Count = 64 * U64 (N - I)
+              then (for all J in I + 1 .. N => Value (J) = 0) and then Count = 64 * U64 (N - I)
               else
                 Non_Zero_Index in I + 1 .. N
                 and then Value (Non_Zero_Index) /= 0
-                and then
-                  (for all J in Non_Zero_Index + 1 .. N => Value (J) = 0)
+                and then (for all J in Non_Zero_Index + 1 .. N => Value (J) = 0)
                 and then Count / 64 = U64 (N - Non_Zero_Index));
 
          Limb := Value (I);
@@ -751,8 +720,7 @@ is
          Count := Count + Cond_Select (0, Z, Non_Zero_Not_Encountered);
 
          Non_Zero_Index :=
-           (if To_Bool (Non_Zero_Not_Encountered)
-              and then not To_Bool (Limb_Is_Zero)
+           (if To_Bool (Non_Zero_Not_Encountered) and then not To_Bool (Limb_Is_Zero)
             then I
             else Non_Zero_Index);
 

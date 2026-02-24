@@ -4,15 +4,10 @@ package body Bigints.Primitives
   with SPARK_Mode => On
 is
    function Short_Div
-     (Dividend      : U32;
-      Dividend_Bits : Natural;
-      Divisor       : U32;
-      Divisor_Bits  : Natural) return U32
+     (Dividend : U32; Dividend_Bits : Natural; Divisor : U32; Divisor_Bits : Natural) return U32
    with
      Pre =>
-       Dividend_Bits >= Divisor_Bits
-       and then Dividend_Bits <= 32
-       and then Divisor_Bits in 1 .. 32
+       Dividend_Bits >= Divisor_Bits and then Dividend_Bits <= 32 and then Divisor_Bits in 1 .. 32
    is
       --  Calculates `dividend / divisor`, given `dividend` and `divisor`
       --  along with their maximum bitsizes.
@@ -43,16 +38,11 @@ is
       D40   : constant U64 := Shift_Right (D, 24) + 1;
       D63   : constant U64 := Shift_Right (D, 1) + D0;
       V0    : constant U64 :=
-        U64
-          (Short_Div
-             (Shift_Left (1, 19) - 3 * Shift_Left (1, 8), 19, U32 (D9), 9));
-      V1    : constant U64 :=
-        Shift_Left (V0, 11) - Shift_Right (V0 * V0 * D40, 40) - 1;
+        U64 (Short_Div (Shift_Left (1, 19) - 3 * Shift_Left (1, 8), 19, U32 (D9), 9));
+      V1    : constant U64 := Shift_Left (V0, 11) - Shift_Right (V0 * V0 * D40, 40) - 1;
       V2    : constant U64 :=
-        Shift_Left (V1, 13)
-        + Shift_Right (V1 * (Shift_Left (1, 60) - V1 * D40), 47);
-      E     : constant U64 :=
-        U64'Last - V2 * D63 + 1 + Shift_Right (V2, 1) * D0;
+        Shift_Left (V1, 13) + Shift_Right (V1 * (Shift_Left (1, 60) - V1 * D40), 47);
+      E     : constant U64 := U64'Last - V2 * D63 + 1 + Shift_Right (V2, 1) * D0;
       HiLo1 : constant Tuple := Mul_Wide (V2, E);
       V3    : constant U64 := Shift_Left (V2, 31) + Shift_Right (HiLo1.Fst, 1);
       X     : constant U64 := V3 + 1;
@@ -88,11 +78,9 @@ is
       return (Q1, R);
    end Div2By1;
 
-   function Div3By2 (U2, U1, U0 : U64; V1_Recip : Recip; V0 : U64) return U64
-   is
+   function Div3By2 (U2, U1, U0 : U64; V1_Recip : Recip; V0 : U64) return U64 is
       Q_Maxed   : constant Choice := Ct_Ge (U2, V1_Recip.Div_Normalized);
-      QuoRem    : constant Tuple :=
-        Div2By1 (Cond_Select (U2, 0, Q_Maxed), U1, V1_Recip);
+      QuoRem    : constant Tuple := Div2By1 (Cond_Select (U2, 0, Q_Maxed), U1, V1_Recip);
       Quo       : U64 := QuoRem.Fst;
       R         : constant U64 := QuoRem.Snd;
       Remainder : U128;
@@ -103,13 +91,10 @@ is
          declare
             QY   : constant U128 := U128 (Quo) * U128 (V0);
             RX   : constant U128 := Shift_Left (Remainder, 64) or U128 (U0);
-            Done : constant Choice :=
-              Ct_Ne (Shift_Right (Remainder, 64), 0) or Ct_Le (QY, RX);
+            Done : constant Choice := Ct_Ne (Shift_Right (Remainder, 64), 0) or Ct_Le (QY, RX);
          begin
             Quo := Cond_Select (Quo - 1, Quo, Done);
-            Remainder :=
-              Cond_Select
-                (Remainder + U128 (V1_Recip.Div_Normalized), Remainder, Done);
+            Remainder := Cond_Select (Remainder + U128 (V1_Recip.Div_Normalized), Remainder, Done);
          end;
       end loop;
       return Quo;
