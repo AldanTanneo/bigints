@@ -75,17 +75,18 @@ is
    function Ct_Eq_U128 is new Generic_Ct_Eq (U128);
    function Ct_Eq (A, B : U128) return Choice renames Ct_Eq_U128;
 
-   function Ct_Ge (A, B : U32) return Choice is
-      Sub : constant U64 := U64 (A) - U64 (B);
+   function Ct_Gt (A, B : U32) return Choice is
+      Sub    : constant U64 := U64 (B) - U64 (A);
+      Mask32 : constant U64 := Shift_Right (Sub, 32);
    begin
-      return Ct_Eq (Shift_Right (Sub, 32), 0);
-   end Ct_Ge;
+      return Choice_From_Mask (Mask32 or Shift_Left (Mask32, 32));
+   end Ct_Gt;
 
-   function Ct_Ge (A, B : U64) return Choice is
-      Sub : constant Tuple := Sub_Borrow (A, B, 0);
+   function Ct_Gt (A, B : U64) return Choice is
+      Sub : constant Tuple := Sub_Borrow (B, A, 0);
    begin
-      return not Choice_From_Mask (Sub.Snd);
-   end Ct_Ge;
+      return Choice_From_Mask (Sub.Snd);
+   end Ct_Gt;
 
    function Ct_Gt (A, B : U128) return Choice is
    begin

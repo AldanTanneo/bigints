@@ -71,11 +71,11 @@ is
    is (not Ct_Eq (A, B))
    with Post => To_Bool (Ct_Ne'Result) = (A /= B);
 
-   function Ct_Ge (A, B : U32) return Choice
-   with Post => To_Bool (Ct_Ge'Result) = (A >= B), Inline_Always;
+   function Ct_Gt (A, B : U32) return Choice
+   with Post => To_Bool (Ct_Gt'Result) = (A > B), Inline_Always;
 
-   function Ct_Ge (A, B : U64) return Choice
-   with Post => To_Bool (Ct_Ge'Result) = (A >= B), Inline_Always;
+   function Ct_Gt (A, B : U64) return Choice
+   with Post => To_Bool (Ct_Gt'Result) = (A > B), Inline_Always;
 
    function Ct_Gt (A, B : U128) return Choice
    with Post => To_Bool (Ct_Gt'Result) = (A > B), Inline_Always;
@@ -83,9 +83,9 @@ is
    pragma Warnings (Off, "actuals for this call may be in wrong order");
 
    --  U32 derived helpers
-   function Ct_Gt (A, B : U32) return Choice
-   is (not (Ct_Ge (B, A)))
-   with Post => To_Bool (Ct_Gt'Result) = (A > B), Inline_Always;
+   function Ct_Ge (A, B : U32) return Choice
+   is (not (Ct_Gt (B, A)))
+   with Post => To_Bool (Ct_Ge'Result) = (A >= B), Inline_Always;
 
    function Ct_Lt (A, B : U32) return Choice
    is (Ct_Gt (B, A))
@@ -96,9 +96,9 @@ is
    with Post => To_Bool (Ct_Le'Result) = (A <= B), Inline_Always;
 
    --  U64 derived helpers
-   function Ct_Gt (A, B : U64) return Choice
-   is (not (Ct_Ge (B, A)))
-   with Post => To_Bool (Ct_Gt'Result) = (A > B), Inline_Always;
+   function Ct_Ge (A, B : U64) return Choice
+   is (not (Ct_Gt (B, A)))
+   with Post => To_Bool (Ct_Ge'Result) = (A >= B), Inline_Always;
 
    function Ct_Lt (A, B : U64) return Choice
    is (Ct_Gt (B, A))
