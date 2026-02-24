@@ -9,6 +9,7 @@ executables = ["runner"]
 
 [[depends-on]]
 bigints = "*"
+rand = "0.1.0"
 
 [[pins]]
 bigints = { path = '..' }

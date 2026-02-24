@@ -1,37 +1,28 @@
 with Ada.Assertions;
 with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
 with Ada.Text_IO;            use Ada.Text_IO;
-with Ada.Numerics.Discrete_Random;
+
+with Ada.Unchecked_Conversion;
+with Rand;
 
 package body Tests is
 
-   package Rng is new Ada.Numerics.Discrete_Random (U64);
-
-   G : Rng.Generator;
-   Init : Boolean := False;
-
-   procedure Init_Rng is
-   begin
-      if not Init then
-         Init := True;
-         Rng.Reset (G);
-      end if;
-   end Init_Rng;
-
    function Random_U64 return U64 is
+      use Rand;
+      R : Rng := Thread_Rng;
    begin
-      Init_Rng;
-      return Rng.Random (G);
+      return R.Gen;
    end Random_U64;
 
    function Random_U256 return U256 is
-      Res : U256;
+      subtype U256_Bytes is Rand.Core.Bytes (1 .. 32);
+      function Cast is new Ada.Unchecked_Conversion (U256_Bytes, U256);
+
+      Res : U256_Bytes;
+      R   : Rand.Rng := Rand.Thread_Rng;
    begin
-      Init_Rng;
-      for I in Res'Range loop
-         Res (I) := Rng.Random (G);
-      end loop;
-      return Res;
+      R.Next_Bytes (Res);
+      return Cast (Res);
    end Random_U256;
 
    package Conversions is new

@@ -21,7 +21,6 @@ package Tests is
 
    use type U64;
 
-   procedure Init_Rng;
    function Random_U64 return U64;
    function Random_U256 return U256;
 
