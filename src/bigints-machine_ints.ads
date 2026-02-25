@@ -166,12 +166,21 @@ is
    with Inline, Post => U128 (High'Result) = X / (2 ** 64);
 
    function Mul_Wide (X, Y : U64) return Tuple
-   with Inline_Always, Post => Mul_Wide'Result.Fst in 0 .. 2 ** 64 - 2;
+   with
+     Inline_Always,
+     Post =>
+       Mul_Wide'Result.Fst in 0 .. 2 ** 64 - 2
+       and then
+         U128 (X) * U128 (Y) = U128 (Mul_Wide'Result.Fst) * 2 ** 64 + U128 (Mul_Wide'Result.Snd);
    --  Multiplies `X` and `Y`, returning the most significant
    --  and the least significant words as `(hi, lo)`.
 
    function Add_Wide (X_Hi, X_Lo, Y_Hi, Y_Lo : U64) return Tuple
-   with Inline_Always;
+   with
+     Inline_Always,
+     Post =>
+       U128 (X_Hi) * 2 ** 64 + U128 (X_Lo) + U128 (Y_Hi) * 2 ** 64 + U128 (Y_Lo)
+       = U128 (Add_Wide'Result.Fst) * 2 ** 64 + U128 (Add_Wide'Result.Snd);
    --  Adds wide numbers represented by pairs of (most significant word, least
    --  significant word) and returns the result in the same format `(hi, lo)`.
 
@@ -180,12 +189,20 @@ is
      Inline_Always,
      Post =>
        Add_Carry'Result.Snd in 0 .. 2
-       and then X + Y + Carry = Add_Carry'Result.Fst + 2 ** 64 * Add_Carry'Result.Snd;
+       and then
+         U128 (X) + U128 (Y) + U128 (Carry)
+         = U128 (Add_Carry'Result.Fst) + 2 ** 64 * U128 (Add_Carry'Result.Snd);
    --  Computes `X + Y + Carry`, returning the result along with the new carry
    --  (0, 1, or 2).
 
    function Overflowing_Add (X, Y : U64) return Tuple
-   with Inline_Always, Post => Overflowing_Add'Result.Snd in 0 .. 1;
+   with
+     Inline_Always,
+     Post =>
+       Overflowing_Add'Result.Snd in 0 .. 1
+       and then
+         U128 (X) + U128 (Y)
+         = U128 (Overflowing_Add'Result.Fst) + U128 (Overflowing_Add'Result.Snd) * 2 ** 64;
    --  Computes `X + Y`, returning the result along with the carry (0 or 1).
 
    function Sub_Borrow (X, Y, Borrow : U64) return Tuple
