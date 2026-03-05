@@ -4,25 +4,22 @@ with Ada.Text_IO;            use Ada.Text_IO;
 
 with Ada.Unchecked_Conversion;
 with Rand;
+with Rand_Bigints;
 
 package body Tests is
 
    function Random_U64 return U64 is
-      use Rand;
-      R : Rng := Thread_Rng;
+      R : Rand.Rng := Rand.Thread_Rng;
    begin
       return R.Gen;
    end Random_U64;
 
-   function Random_U256 return U256 is
-      subtype U256_Bytes is Rand.Core.Bytes (1 .. 32);
-      function Cast is new Ada.Unchecked_Conversion (U256_Bytes, U256);
+   package Rand_U256s is new Rand_Bigints (U256s);
 
-      Res : U256_Bytes;
-      R   : Rand.Rng := Rand.Thread_Rng;
+   function Random_U256 return U256 is
+      R : Rand.Rng := Rand.Thread_Rng;
    begin
-      R.Next_Bytes (Res);
-      return Cast (Res);
+      return Rand_U256s.Gen (R);
    end Random_U256;
 
    package Conversions is new Ada.Numerics.Big_Numbers.Big_Integers.Unsigned_Conversions (U64);

@@ -9,10 +9,12 @@ executables = ["runner"]
 
 [[depends-on]]
 bigints = "*"
+rand_bigints = "*"
 rand = "0.1.0"
 
 [[pins]]
 bigints = { path = '..' }
+rand_bigints = { path = '../rand_bigints' }
 
 [build-profiles]
 bigints = 'validation'
