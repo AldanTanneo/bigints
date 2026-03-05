@@ -1,6 +1,6 @@
 name = "rand_bigints"
 description = "Random big integer generation"
-version = "0.2.0-dev"
+version = "0.2.0"
 
 authors = ["César SAGAERT"]
 maintainers = ["César SAGAERT <sagaert@adacore.com>"]
@@ -15,6 +15,3 @@ tags = ["random", "bigint", "ada2022"]
 [[depends-on]]
 rand_core = "0.1.0"
 bigints = "0.2.0"
-
-[[pins]]
-bigints = { path = '..' }

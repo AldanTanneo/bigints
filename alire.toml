@@ -1,6 +1,6 @@
 name = "bigints"
 description = "Constant time big integer library"
-version = "0.2.0-dev"
+version = "0.2.0"
 
 authors = ["César SAGAERT"]
 maintainers = ["César SAGAERT <sagaert@adacore.com>"]
@@ -13,6 +13,3 @@ tags = ["bigint", "cryptography", "constant-time", "spark", "ada2022"]
 "*".ada_version = "Ada2022"
 development.optimization = ["-O3"]
 release.runtime_checks = "none"
-
-[test]
-runner = 'alire'
