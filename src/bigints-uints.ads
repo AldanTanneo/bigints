@@ -3,7 +3,8 @@ with Bigints.Const_Choice;
 
 generic
    BITS : Positive;
-package Bigints.Uints with SPARK_Mode => On, Pure, Initial_Condition => (BITS mod 64 = 0) is
+   pragma Compile_Time_Error (BITS mod 64 /= 0, "BITS must be a multiple of 64");
+package Bigints.Uints with SPARK_Mode => On, Pure is
    N : constant Positive := BITS / 64;
 
    type Uint is array (1 .. N) of U64;
