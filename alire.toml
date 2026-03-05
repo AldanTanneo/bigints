@@ -1,9 +1,9 @@
 name = "bigints"
 description = ""
-version = "0.1.0-dev"
+version = "0.2.0-dev"
 
-authors = ["Cesar SAGAERT"]
-maintainers = ["Cesar SAGAERT <sagaert@adacore.com>"]
+authors = ["César SAGAERT"]
+maintainers = ["César SAGAERT <sagaert@adacore.com>"]
 maintainers-logins = ["AldanTanneo"]
 licenses = "MIT"
 website = "https://github.com/AldanTanneo/bigints"
